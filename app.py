@@ -21,7 +21,7 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "data.pth")
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for cross-origin requests
-model = whisper.Whisper.load_model("tiny")
+model = whisper.load_model("tiny") 
 
 
 # Load environment variables
