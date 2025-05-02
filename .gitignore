@@ -1,0 +1,19 @@
+# Ignore virtual environments
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore environment variables & credentials
+.env
+
+# Ignore logs & debug files
+*.log
+
+# Ignore unnecessary system files
+.DS_Store
+Thumbs.db
+
+# Ignore VS Code workspace settings (optional)
+.vscode/
