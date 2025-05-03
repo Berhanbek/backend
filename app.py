@@ -11,7 +11,7 @@ from google.generativeai import types
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 import speech_recognition as sr
-import whisper
+from google.cloud import speech_v1p1beta1 as speech
 from trainvoice import get_response_from_ai, add_to_intents, save_intents_to_file
 import uuid
 
@@ -21,7 +21,6 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "data.pth")
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for cross-origin requests
-model = whisper.load_model("tiny") 
 
 
 # Load environment variables
@@ -386,6 +385,16 @@ def add_intent():
     save_intents_to_file()
     return jsonify({"success": True, "message": f"Intent '{tag}' added successfully."})
 @app.route("/voice", methods=["POST"])
+def transcribe_audio(audio_file):
+    client = speech.SpeechClient()
+    with open(audio_file, "rb") as f:
+        audio_content = f.read()
+
+    audio = speech.RecognitionAudio(content=audio_content)
+    config = speech.RecognitionConfig(language_code="en-US")
+
+    response = client.recognize(config=config, audio=audio)
+    return response.results[0].alternatives[0].transcript
 def handle_voice_message():
     if 'audio' not in request.files:
         return jsonify({"error": "No audio file provided"}), 400
@@ -400,8 +409,8 @@ def handle_voice_message():
         audio_file.save(audio_path)
         print(f"Audio file saved at: {audio_path}")
 
-        result = model.transcribe(audio_path)
-        transcribed_text = result.get("text", "").strip()
+        transcribed_text = transcribe_audio(audio_path).strip()
+ # Transcribe the audio file
         print(f"Transcribed Text: {transcribed_text}")
 
         if not transcribed_text:
@@ -427,5 +436,5 @@ if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
 
-result = model.transcribe("path/to/sample_audio.webm")
-print("Transcribed Text:", result["text"])
+transcribed_text = transcribe_audio("path/to/sample_audio.webm")
+print("Transcribed Text:", transcribed_text)
