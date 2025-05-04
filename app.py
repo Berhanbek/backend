@@ -1,15 +1,5 @@
-import os
 import nltk
-
-from flask import Flask
-
-# 👇 Define the nltk data path first
-NLTK_DATA_PATH = os.path.join(os.getcwd(), "nltk_data")
-os.makedirs(NLTK_DATA_PATH, exist_ok=True)
-
-# 👇 Set the path before any download
-nltk.data.path.append(NLTK_DATA_PATH)
-nltk.download("punkt", download_dir=NLTK_DATA_PATH)
+nltk.download()
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
