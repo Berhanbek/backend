@@ -5,8 +5,13 @@ NLTK_DATA_PATH = "/opt/render/nltk_data"
 os.makedirs(NLTK_DATA_PATH, exist_ok=True)
 nltk.data.path.append(NLTK_DATA_PATH)
 
+# Download specific missing NLTK resources
 nltk.download("punkt", download_dir=NLTK_DATA_PATH)
 nltk.download("stopwords", download_dir=NLTK_DATA_PATH)
+nltk.download("wordnet", download_dir=NLTK_DATA_PATH)
+nltk.download("averaged_perceptron_tagger", download_dir=NLTK_DATA_PATH)
+nltk.download("omw-1.4", download_dir=NLTK_DATA_PATH)
+nltk.download("tokenizers/punkt_tab", download_dir=NLTK_DATA_PATH)  # Manually include missing resource
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -14,7 +19,7 @@ import random
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
-from nltk_utils import bag_of_words, tokenize
+from nltk_utils import tokenize
 
 
 # Define safe paths for files
