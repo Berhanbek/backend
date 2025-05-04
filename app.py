@@ -187,19 +187,32 @@ def get_intent_response(msg):
 
 # Route message to intent or Gemini
 def route_question(msg):
-    response = get_intent_response(msg)
-    if response:
-        return response
-    # Fallback to Gemini ISSEER
+    # Try to match a real intent (not default)
+    tokens = tokenize(msg)
+    reload_intents()
+    for intent in intents["intents"]:
+        if intent.get("tag") == "default":
+            continue
+        for pattern in intent.get("patterns", []):
+            pattern_tokens = tokenize(pattern)
+            if any(token in tokens for token in pattern_tokens):
+                if intent.get("responses"):
+                    return random.choice(intent["responses"])
+    # No real intent matched, try Gemini
     try:
         result = gemini_model.generate_content([msg])
-        return result.text if hasattr(result, "text") else str(result)
+        if hasattr(result, "text") and result.text:
+            return result.text
+        elif hasattr(result, "candidates") and result.candidates:
+            return result.candidates[0].text
+        else:
+            return str(result)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        print(f"Error in Gemini response: {str(e)}")
+        # If Gemini fails, fallback to default intent
+        for intent in intents["intents"]:
+            if intent.get("tag") == "default" and intent.get("responses"):
+                return random.choice(intent["responses"])
         return "Sorry, I couldn't process your request."
-
 # ROUTES
 @app.route("/message", methods=["POST"])
 def send_message_to_bot():
@@ -232,6 +245,11 @@ def add_intent():
     with open(INTENTS_PATH, "w", encoding="utf-8") as f:
         json.dump(intents, f, ensure_ascii=False, indent=4)
     return jsonify({"success": True, "message": f"Intent '{tag}' added successfully."})
+
+# Health check route for root
+@app.route("/", methods=["GET"])
+def health():
+    return "Backend is running!", 200
 
 # Start server
 if __name__ == "__main__":
