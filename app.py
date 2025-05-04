@@ -1,15 +1,15 @@
-import nltk
 import os
+import nltk
 
-nltk.data.path.append("/opt/render/project/src/nltk_data")  # Example path
-nltk.download('punkt', download_dir="/opt/render/project/src/nltk_data")
+from flask import Flask
 
-# Download valid NLTK resources
+# 👇 Define the nltk data path first
+NLTK_DATA_PATH = os.path.join(os.getcwd(), "nltk_data")
+os.makedirs(NLTK_DATA_PATH, exist_ok=True)
+
+# 👇 Set the path before any download
+nltk.data.path.append(NLTK_DATA_PATH)
 nltk.download("punkt", download_dir=NLTK_DATA_PATH)
-nltk.download("stopwords", download_dir=NLTK_DATA_PATH)
-nltk.download("wordnet", download_dir=NLTK_DATA_PATH)
-nltk.download("averaged_perceptron_tagger", download_dir=NLTK_DATA_PATH)
-nltk.download("omw-1.4", download_dir=NLTK_DATA_PATH)# Manually include missing resource
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
