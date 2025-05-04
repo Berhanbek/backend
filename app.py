@@ -1,3 +1,6 @@
+import nltk
+nltk.download("punkt")
+nltk.download("stopwords")
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -6,6 +9,7 @@ import json
 from dotenv import load_dotenv
 import google.generativeai as genai
 from nltk_utils import bag_of_words, tokenize
+
 
 # Define safe paths for files
 INTENTS_PATH = os.path.join(os.path.dirname(__file__), "intents.json")
