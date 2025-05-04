@@ -235,6 +235,7 @@ def add_intent():
 
 # Start server
 if __name__ == "__main__":
-    print("Server running on http://0.0.0.0:8080")
+    port = int(os.environ.get("PORT", 8080))
+    print(f"Server running on http://0.0.0.0:{port}")
     from waitress import serve
-    serve(app, host="0.0.0.0", port=8080)
+    serve(app, host="0.0.0.0", port=port)
