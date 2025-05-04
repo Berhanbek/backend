@@ -2,7 +2,7 @@ import nltk
 
 # Download required resource only once
 nltk.download('punkt', quiet=True)
-nltk.download('punkt_tab', quiet=True)
+nltk.download('punkt_tab')
 nltk.download('stopwords', quiet=True)
 from flask import Flask, request, jsonify
 from flask_cors import CORS
