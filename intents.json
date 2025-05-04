@@ -1,901 +1,440 @@
 {
   "intents": [
-      {
-          "tag": "greeting",
-          "patterns": [
-              "Hi",
-              "Hey",
-              "Hello",
-              "Good morning",
-              "Good evening",
-              "\u1230\u120b\u121d",
-              "\u12a5\u1295\u12f4\u1275 \u1290\u1205?",
-              "\u12a5\u1295\u12b3\u1295 \u12f0\u1205\u1293 \u1218\u1321",
-              "Yo",
-              "Howdy"
-          ],
-          "responses": [
-              "Hello \ud83d\udc4b I\u2019m TheISSeer \u2014 ask me anything about your department!",
-              "Selam! Need help with your IS department today?",
-              "Hi there! Ready to navigate Information Science together?"
-          ]
-      },
-      {
-          "tag": "goodbye",
-          "patterns": [
-              "Bye",
-              "Goodbye",
-              "See you",
-              "\u127b\u12cd",
-              "\u12f0\u1205\u1293 \u1201\u1295",
-              "Catch you later",
-              "See ya"
-          ],
-          "responses": [
-              "Take care! Come back anytime. \ud83c\udf93",
-              "It was great assisting you. \ud83d\udc4b",
-              "Logging off now, stay curious!"
-          ]
-      },
-      {
-          "tag": "thanks",
-          "patterns": [
-              "Thanks",
-              "Thank you",
-              "Thanks a lot",
-              "\u12a0\u1218\u1230\u130d\u1293\u1208\u1201",
-              "\u121d\u1235\u130b\u1293",
-              "Appreciate it",
-              "I\u2019m grateful"
-          ],
-          "responses": [
-              "You're most welcome!",
-              "Anytime! \ud83d\ude0e",
-              "Glad to be of help!"
-          ]
-      },
-      {
-          "tag": "bot_creator",
-          "patterns": [
-              "Who made this bot?",
-              "Who is the creator?",
-              "Who made you?",
-              "Who is your developer?",
-              "who built you?",
-              "Who",
-              "Who is you GOD",
-              "\u12ed\u1205\u1295 \u12a0\u12d8\u130b\u1300\u12cd \u121b\u1295 \u1290\u12cd?",
-              "Who built you?"
-          ],
-          "responses": [
-                              "I was built by a fellow student, officially supported by the department!",
-              "Student-built. Department-acknowledged. Created with purpose. \ud83d\udd27"
-          ]
-      },
-      {
-          "tag": "bot_purpose",
-          "patterns": [
-              "What can you do?",
-              "What's your purpose?",
-              "What are you",
-              "What can you do",
-              "\u12e8\u12a0\u1295\u1270 \u1235\u122b \u121d\u1295\u12f5\u1290\u12cd?",
-              "How do you help students?",
-              "What\u2019s your job?"
-          ],
-          "responses": [
-              "I help with info about your department, instructors, and redirect you to great study resources. Ask away!",
-              "Ask about instructors, offices, contacts or how to access learning content.",
-              "I\u2019m your academic navigator \u2014 no file sharing, but 100% clarity!"
-          ]
-      },
-      {
-          "tag": "instructor_info",
-          "patterns": [
-              "Who are the instructors?",
-              "List of instructors",
-              "Instructors",
-              "\u121d\u1295 \u12ed\u120b\u120d \u12a0\u1235\u1270\u12f3\u12f0\u122d",
-              "\u12e8\u12a0\u1235\u1270\u12f3\u12f0\u122d \u1218\u121d\u1205\u122b\u1295",
-              "Who teaches this course?",
-              "\u12e8\u12a0\u1235\u1270\u12f3\u12f0\u122d \u1218\u121d\u1205\u122b\u1295 \u121b\u1290\u12cd?",
-              "\u12e8\u12a0\u1235\u1270\u12f3\u12f0\u122d \u1218\u121d\u1205\u122b\u1295 \u12e8\u121a\u12eb\u12cd\u1241\u1275 \u121b\u1290\u12cd?",
-              "Who are the professors?",
-              "Who is the lecturer?",
-              "\u12e8\u12a0\u1235\u1270\u12f3\u12f0\u122d \u1218\u121d\u1205\u122b\u1295 \u12e8\u121a\u12eb\u12cd\u1241\u1275 \u121b\u1290\u12cd?",
-              "Who is the instructor?",
-              "Who is the teacher?",
-              "Teachers list",
-              "\u12e8\u12a0\u1235\u1270\u12f3\u12f0\u122d \u1218\u121d\u1205\u122b\u1295 \u12e8\u121a\u12eb\u12cd\u1241\u1275 \u121b\u1290\u12cd?"
-          ],
-          "responses": [
-              "You can view all instructors, emails, roles, and offices in the Academic Navigator \ud83d\udcd8",
-              "Dr. Michael Melese is the Department Head \u2014 Office: Eshetu Chole 621",
-              "Search instructors by name or course via the bot navigator. \ud83e\uddd1\u200d\ud83c\udfeb"
-          ]
-      },
-      {
-          "tag": "telegram_redirect",
-          "patterns": [
-              "Do you have notes?",
-              "Where can I download exams?",
-              "\u121b\u1235\u1273\u12c8\u123b \u12a0\u1208?",
-              "slides",
-              "\u121b\u1235\u1270\u120b\u1208\u134a\u12eb",
-              "Can you send PDFs?",
-              "Files?"
-          ],
-          "responses": [
-              "Download all course files, notes, and exams from our free Telegram bot \ud83d\udc49 @SISResourcesBot",
-              "TheISSeer doesn\u2019t send files \u2014 for that, join the Telegram bot \ud83d\udcda",
-              "I help with info and clarity. For files, please use @SISResourcesBot!"
-          ]
-      },
-      {
-          "tag": "classroom_question",
-          "patterns": [
-              "Explain recursion",
-              "\u12e8DB \u12a0\u12c8\u12f3\u12f5\u122e\u127d \u121d\u1295\u12f5\u1293\u1278\u12cd?",
-              "OOP vs functional programming?",
-              "\u12e8normalization \u12f0\u1228\u1303\u12ce\u127d",
-              "What is polymorphism?",
-              "\u12e8Data Structure \u12a0\u12ed\u1290\u1276\u127d?"
-          ],
-          "responses": [
-              "\ud83d\udce1 I detect this is a classroom topic. Passing it to Gemini AI for a precise and clear answer\u2026",
-              "This question needs expert assistance. I\u2019ll forward it to our knowledge module. \ud83e\udd16",
-              "Gemini API activated! Let me pull the concept explanation for you."
-          ]
-      },
+    {
+      "tag": "greeting",
+      "patterns": ["Hi", "Hey", "Selam", "Hello", "Good morning", "Yo", "Howdy", "ሰላም"],
+      "responses": [
+        "Hello 👋 I’m TheISSeer — ask me anything about your department!",
+        "Selam! Need help with your IS department today?",
+        "Hi there! Ready to navigate Information Science together?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["Bye", "Goodbye", "See you", "Catch you later", "ደህና ሁን", "እንግዲኛ ነን"],
+      "responses": [
+        "Take care! Come back anytime. 🎓",
+        "It was great assisting you. 👋",
+        "Logging off now, stay curious!"
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["Thanks", "Thank you", "Appreciate it", "መሰገነኝ", "አመሰግናለሁ", "አመሰግናለሁ በጣም"],
+      "responses": ["You're most welcome!", "Anytime! 😎", "Glad to be of help!"]
+    },
+    {
+      "tag": "bot_purpose",
+      "patterns": [
+        "What can you do?", "What's your purpose?", "How do you help students?",
+        "What are you?", "Why do you exist?", "ምን ታደርጋለህ?", "አንተ ማን ነህ?"
+      ],
+      "responses": [
+        "I help with info about your department, instructors, and redirect you to great study resources. Ask away!",
+        "Ask about instructors, offices, contacts, or how to access learning content.",
+        "I’m your academic navigator — no file sharing, but 100% clarity!"
+      ]
+    },
+    {
+      "tag": "bot_creator",
+      "patterns": [
+        "Who made this bot?", "Who created you?", "Who is your developer?", "መፍጠሩ ያንተ ማን ነው?"
+      ],
+      "responses": [
+        "I was built by a fellow student, officially supported by the department!",
+        "Student-built. Department-acknowledged. Created with purpose. 🔧"
+      ]
+    },
+    {
+      "tag": "student_portal",
+      "patterns": [
+        "How do I check my grade?", "Where is the student portal?",
+        "I want to register courses", "AAU portal link", "ማስመዝገብ እፈልጋለሁ", "grade viewer"
+      ],
+      "responses": [
+        "Use the AAU student portal (https://portal.aau.edu.et) to view grades, register, and more.",
+        "Log in to the portal to access grades, schedules, and course registration. Need help with login?"
+      ]
+    },
+    {
+      "tag": "instructor_info",
+      "patterns": [
+        "List of instructors", "Who teaches which course?", "IS teachers", "አስተዳደሮች ማነው?", "ማን ያስተምራል?"
+      ],
+      "responses": [
+        "You can view all instructors, emails, roles, and offices in the Academic Navigator 📘",
+        "Dr. Michael Melese is the Department Head — Office: Eshetu Chole 621",
+        "Search instructors by name or course via the bot navigator. 🧑‍🏫"
+      ]
+    },
+    {
+      "tag": "project_guidelines",
+      "patterns": [
+        "How does the final project work?", "What are the project requirements?", 
+        "Group project info", "መጨረሻ ፕሮጀክት", "Capstone guide"
+      ],
+      "responses": [
+        "The Final Year Project is mandatory. You’ll work in a group to solve a real-world problem.",
+        "Your project must be supervised, documented, and presented. Ask your advisor or check the bulletin!"
+      ]
+    },
+    {
+      "tag": "internship_info",
+      "patterns": [
+        "How do internships work?", "Internship requirements", "የሥራ ሙከራ", "Where to find internships?"
+      ],
+      "responses": [
+        "Internships are done in the 3rd year. You must apply, work for 2 months, and submit a report.",
+        "Ask the internship coordinator or check the latest bulletin for partner companies."
+      ]
+    },
+    {
+      "tag": "career_guidance",
+      "patterns": [
+        "What job can I get after this?", "IS career options", "ምን ሥራ እሰራለሁ?", "Future with IS degree"
+      ],
+      "responses": [
+        "Graduates work as software developers, data analysts, UX designers, IT consultants, and more.",
+        "The IS degree opens paths in tech, business, and research — let’s explore it together!"
+      ]
+    },
+    {
+      "tag": "scholarships",
+      "patterns": [
+        "Are there scholarships?", "How to apply for aid?", "የትምህርት እርዳታ", "Financial support"
+      ],
+      "responses": [
+        "Check with the Dean’s Office or Student Affairs for active scholarship and support programs.",
+        "Some scholarships are merit-based, others need-based — apply early!"
+      ]
+    },
+    {
+      "tag": "student_support",
+      "patterns": [
+        "I’m failing a course", "How can I get tutoring?", "እርዳታ እፈልጋለሁ", "I need help with academics"
+      ],
+      "responses": [
+        "Talk to your instructor or academic advisor immediately. They’ll help you find the right support.",
+        "There are peer-tutoring programs and study sessions for most core courses."
+      ]
+    },
+    {
+      "tag": "telegram_redirect",
+      "patterns": [
+        "Do you have notes?", "Where can I get old exams?", "መማሪያዎች", "files", "PDFs"
+      ],
+      "responses": [
+        "Download all course files, notes, and exams from our Telegram bot 👉 @SISResourcesBot",
+        "For files, head to @SISResourcesBot. I handle info, not file sharing. 📁"
+      ]
+    },
+    {
+      "tag": "Sewasew",
+      "patterns": [
+          "Sewasew"]
+          ,
 
-      {
-          "tag": "Sewasew",
-          "patterns": [
-              "Sewasew"]
-              ,
+          "responses": [
+           "Sewasew made the ISSeer not the bot!"
+          ]
+        },
+        {
 
-              "responses": [
-               "Sewasew made the ISSeer not the bot!"
-              ]
-            },
-            {
-  
-              "tag": "Ambassador",
-              "patterns": [
-                                    "The Classmate I could not figure out "
-              ],
-          "responses": [
-              "Eden is the most talented IS Student. She works hard, she is competent, she is funny and also She is the best that IS could offer."
-          ]
+          "tag": "Ambassador",
+          "patterns": [
+                                "The Classmate I could not figure out "
+          ],
+      "responses": [
+          "Eden is the most talented IS Student. She works hard, she is competent, she is funny and also She is the best that IS could offer."
+      ]
+  },
+  {
+        "tag": "registration_help",
+        "patterns": [
+          "How do I register for classes?",
+          "Course registration steps",
+          "Add/drop deadlines?",
+          "How do I fix registration issues?",
+          "SIS course registration help"
+        ],
+        "responses": [
+          "You can register on the AAU Student Information System (SIS Portal). Need a direct link?",
+          "For help with registration errors, visit the SIS admin office near Lab 1."
+        ]
       },
-            {
-              "tag": "office_hours",
-              "patterns": [
-                "When is Dr. Brook available?",
-                "Office hours for instructors",
-                "Advisor schedule",
-                "Meeting time for lecturers",
-                "When can I visit my advisor?"
-              ],
-              "responses": [
-                "You can find faculty office hours posted on the SIS notice board or through the Academic Navigator.",
-                "Ask about a specific instructor — I might have their schedule!"
-              ]
-            },
-            {
-              "tag": "course_prerequisite",
-              "patterns": [
-                "Prerequisites for Software Engineering?",
-                "Do I need OOP before AI?",
-                "Which course comes before DBMS?",
-                "Pre-req for Data Structures"
-              ],
-              "responses": [
-                "SIS courses usually follow a set structure. I can help you check the prerequisites based on the curriculum flowchart.",
-                "Let me know the course name and I’ll check if there’s a required class before it."
-              ]
-            },
-            {
-              "tag": "course_outline",
-              "patterns": [
-                "Syllabus for Networking",
-                "Course topics in AI",
-                "What’s covered in DBMS?",
-                "Outline for Data Structures",
-                "Modules in Software Engineering"
-              ],
-              "responses": [
-                "Most outlines are shared via your instructors or @SISResourcesBot. I can check it for you!",
-                "Let me know the course code (e.g., ISCI 3013) and I’ll help you find the syllabus."
-              ]
-            },
-            {
-              "tag": "exam_schedule",
-              "patterns": [
-                "Midterm timetable?",
-                "Final exam date?",
-                "Assessment schedule",
-                "Exam week at SIS?",
-                "Test calendar"
-              ],
-              "responses": [
-                "The department usually posts the exam schedule on the SIS hallway board and Telegram. Want me to check?",
-                "I can share links to the latest exam calendar if you tell me the semester."
-              ]
-            },
-            {
-              "tag": "grading_policy",
-              "patterns": [
-                "How does grading work?",
-                "Grade breakdown for courses?",
-                "Marking scheme at SIS?",
-                "Is attendance part of the grade?",
-                "What’s the pass mark?"
-              ],
-              "responses": [
-                "Typically, it’s 20% quizzes, 30% assignments/projects, and 50% final. But it varies per course!",
-                "Check the syllabus or ask me for a specific course’s breakdown."
-              ]
-            },
-            {
-              "tag": "registration_help",
-              "patterns": [
-                "How do I register for classes?",
-                "Course registration steps",
-                "Add/drop deadlines?",
-                "How do I fix registration issues?",
-                "SIS course registration help"
-              ],
-              "responses": [
-                "You can register on the AAU Student Information System (SIS Portal). Need a direct link?",
-                "For help with registration errors, visit the SIS admin office near Lab 1."
-              ]
-            },
-            {
-              "tag": "graduation_requirements",
-              "patterns": [
-                "How many credits to graduate?",
-                "SIS graduation checklist",
-                "What courses are mandatory?",
-                "Is internship required to graduate?"
-              ],
-              "responses": [
-                "You’ll need to complete around 145 ECTS including core, electives, and internship.",
-                "Ask me about your batch year and I’ll break down the credit requirements!"
-              ]
-            },
-            {
-              "tag": "library_info",
-              "patterns": [
-                "Where is the SIS library?",
-                "Library hours?",
-                "Digital resources for SIS",
-                "Can I borrow textbooks?",
-                "How to access AAU e-library?"
-              ],
-              "responses": [
-                "The AAU Kennedy Library and e-library portal are great places to start. Want the link?",
-                "You can access journals, ebooks, and SIS-specific materials with your student ID."
-              ]
-            },
-            {
-              "tag": "lab_info",
-              "patterns": [
-                "Is Lab 1 open?",
-                "Lab access times?",
-                "Where is the SIS computer lab?",
-                "Can I use the lab after class?",
-                "Do we have lab sessions?"
-              ],
-              "responses": [
-                "Lab 1 and Lab 2 are located in the SIS building, open Mon–Fri, usually from 9 AM to 5 PM.",
-                "Your instructor will assign lab sessions based on the course!"
-              ]
-            },
-            {
-              "tag": "internship_info",
-              "patterns": [
-                "Internship guidelines?",
-                "When do we do internships?",
-                "Is internship compulsory at SIS?",
-                "Where can I apply for internships?",
-                "Can I get help finding internship sites?"
-              ],
-              "responses": [
-                "Yes! Internships are part of your 3rd-year curriculum. You’ll need departmental approval.",
-                "I can suggest companies and NGO partners that accept SIS students. Want the list?"
-              ]
-            },
-            {
-              "tag": "project_guidelines",
-              "patterns": [
-                "How to start final year project?",
-                "Capstone rules?",
-                "Project supervision process?",
-                "What are good topics for SIS projects?",
-                "Deadline for project proposal"
-              ],
-              "responses": [
-                "FYP proposals are submitted in Semester I of Year IV. I can help you brainstorm topics!",
-                "Supervisors are assigned after proposal review by the project committee."
-              ]
-            },
-            {
-              "tag": "student_support",
-              "patterns": [
-                "Help with coursework",
-                "Struggling academically",
-                "Can I talk to an advisor?",
-                "Tutoring at SIS?",
-                "Support services?"
-              ],
-              "responses": [
-                "You can reach out to your course advisor or the academic support desk at SIS.",
-                "Need help with a course? Let me know which one — I’ll try to connect you with a tutor or resources."
-              ]
-            },
+      {
+        "tag": "exam_schedule",
+        "patterns": [
+          "Midterm timetable?",
+          "Final exam date?",
+          "Assessment schedule",
+          "Exam week at SIS?",
+          "Test calendar"
+        ],
+        "responses": [
+          "The department usually posts the exam schedule on the SIS hallway board and Telegram. Want me to check?",
+          "I can share links to the latest exam calendar if you tell me the semester."
+        ]
+      },
+      {
+        "tag": "course_prerequisite",
+        "patterns": [
+          "Prerequisites for Software Engineering?",
+          "Do I need OOP before AI?",
+          "Which course comes before DBMS?",
+          "Pre-req for Data Structures"
+        ],
+        "responses": [
+          "SIS courses usually follow a set structure. I can help you check the prerequisites based on the curriculum flowchart.",
+          "Let me know the course name and I’ll check if there’s a required class before it."
+        ]
+      },
+      {
+        "tag": "graduation_requirements",
+        "patterns": [
+          "How many credits to graduate?",
+          "SIS graduation checklist",
+          "What courses are mandatory?",
+          "Is internship required to graduate?"
+        ],
+        "responses": [
+          "You’ll need to complete around 145 ECTS including core, electives, and internship.",
+          "Ask me about your batch year and I’ll break down the credit requirements!"
+        ]
+      },
+      {
+        "tag": "internship_info",
+        "patterns": [
+          "Internship guidelines?",
+          "When do we do internships?",
+          "Is internship compulsory at SIS?",
+          "Where can I apply for internships?",
+          "Can I get help finding internship sites?"
+        ],
+        "responses": [
+          "Yes! Internships are part of your 3rd-year curriculum. You’ll need departmental approval.",
+          "I can suggest companies and NGO partners that accept SIS students. Want the list?"
+        ]
+      },
+  {
+    "tag": "name",
+    "patterns": [
+      "What is your name?",
+      "Who are you?",
+      "Tell me your name"
+    ],
+    "responses": [
+      "I’m TheISSeer — your department helper bot!"
+    ]
+  },
+  {
+    "tag": "bot_purpose",
+    "patterns": [
+      "What can you do?",
+      "How can you help me?",
+      "Your purpose?"
+    ],
+    "responses": [
+      "I help you explore the IS department, courses, events, student activities, and much more at AAU!"
+    ]
+  },{
+    "tag": "team_roha",
+    "patterns": [
+      "Who is Team Roha?",
+      "Team Roha in hackathon",
+      "Tell me about Team Roha"
+    ],
+    "responses": [
+      "🏆 Team Roha consists of IS students Berhanelidet, Edeal, Abel, Shahon, and CS student Nolawi. They earned 2nd place at the Google Developer Student Clubs AAU Hackathon. Their teamwork and innovation were outstanding!"
+    ]
+  }
+,
+{
+  "tag": "IS_Talks",
+  "patterns": [
+    "What is IS Talks?",
+    "Tell me about the IS_Talks show",
+    "Best IS_Talks episode"
+  ],
+  "responses": [
+    "🎤 IS_Talks is a student-led talk series from the School of Information Systems, spotlighting tech innovators and student projects. Watch one of our best episodes featuring Team Roha here: https://www.youtube.com/watch?v=DedNu9pTV3E&t=3187s"
+  ]
+}
+,
+{
+  "tag": "IS_students",
+  "patterns": [
+    "Describe IS students",
+    "What are IS students like?",
+    "IS student life at AAU",
+    "Do IS students code?"
+  ],
+  "responses": [
+    "💡 IS students are tech-savvy and business-minded. They’re into coding, design, entrepreneurship, and data. Whether they’re participating in hackathons, GDSC AAU, or launching startups, they balance technical skills with creative and managerial thinking."
+  ]
+}
+,
+{
+  "tag": "IS_department_features",
+  "patterns": [
+    "Why IS instead of CS?",
+    "What makes IS special?",
+    "Difference between IS and CS",
+    "Why choose IS at AAU?"
+  ],
+  "responses": [
+    "📍 IS at AAU uniquely blends tech and business. While CS focuses more on algorithms and hardcore programming, IS prepares you for roles like system analyst, tech consultant, or digital strategist by combining coding with business, data, and user-centered design thinking."
+  ]
+}
+,
+{
+  "tag": "IS_course_overview",
+  "patterns": [
+    "IS courses overview",
+    "IS degree roadmap",
+    "What does the IS program teach?",
+    "IS curriculum summary"
+  ],
+  "responses": [
+    "🗂️ The BIS program is structured over 4 years:\n1️⃣ Foundational courses: C++, Math, Emerging Tech.\n2️⃣ Core management & database subjects.\n3️⃣ System analysis, web dev, and networking.\n4️⃣ Advanced: AI, HCI, Project Management, Enterprise Systems. \n📌 For full course catalog, ask me!"
+  ]
+}
+,
+{
+  "tag": "IS_department_info",
+  "patterns": [
+    "Tell me about the IS department",
+    "Information Systems at AAU",
+    "Overview of IS department",
+    "IS program details",
+    "Where is the IS department located?"
+  ],
+  "responses": [
+    "👋 Welcome to the School of Information Systems at AAU! \nWe offer a dynamic 4-year Bachelor’s in Information Systems (BIS), blending tech and management skills. Located on the FBE Campus, our department provides a balanced curriculum covering programming, cybersecurity, systems design, and more. Contact us at 011 122 9191 or visit the 1st floor of the Eshetu Chole Building."
+  ]
+}
+,
 
-            {
-              "tag": "student_portal",
-              "patterns": [
-                "AAU student portal?",
-                "Where to log in for grades?",
-                "Course registration link?",
-                "SIS academic portal",
-                "Portal login help"
-              ],
-              "responses": [
-                "Use the AAU Student Portal: https://portal.aau.edu.et — need login instructions?",
-                "You can manage your courses, view grades, and get timetables from there."
-              ]
-            },
-            {
-              "tag": "clubs_activities",
-              "patterns": [
-                "Student clubs at SIS?",
-                "Any tech communities?",
-                "Is there a GDSC or GDG?",
-                "How do I join student orgs?",
-                "What events do student clubs organize?"
-              ],
-              "responses": [
-                "Yes! You can join GDSC AAU, GDG AAU, SIS Club, UNAAU, and more. I can connect you.",
-                "Student orgs host bootcamps, hackathons, and public lectures!"
-              ]
-            },
-            {
-              "tag": "scholarships",
-              "patterns": [
-                "How do I apply for scholarships at AAU?",
-                "Is there tuition support?",
-                "Scholarships for SIS students?",
-                "Can I get a need-based grant?",
-                "Financial aid options"
-              ],
-              "responses": [
-                "AAU offers merit- and need-based scholarships. Check with the Registrar or SIS Admin office.",
-                "Want help drafting an application letter? I can assist!"
-              ]
-            },
-            {
-              "tag": "career_guidance",
-              "patterns": [
-                "What jobs can I get with IS degree?",
-                "Career advice for SIS students",
-                "What roles do IS grads take?",
-                "Job market after AAU SIS?",
-                "Pathways after graduation"
-              ],
-              "responses": [
-                "IS graduates work in data science, software dev, UX/UI, policy research, and more!",
-                "Want a career roadmap or resume tips? Just ask!"
-              ]
-            },
-            {
-              "tag": "motivation",
-              "patterns": [
-                "I’m tired of studying",
-                "Motivate me please",
-                "SIS is hard 😩",
-                "Can you encourage me?",
-                "I need inspiration"
-              ],
-              "responses": [
-                "You’re a student at AAU’s School of Information Science — you already made it far!",
-                "Your future self will thank you. Keep pushing, one line of code at a time!"
-              ]
-            },
-            {
-              "tag": "quote",
-              "patterns": [
-                "Give me a tech quote",
-                "Inspire me with a quote",
-                "Share some wisdom",
-                "Motivational quote?",
-                "Famous CS quote"
-              ],
-              "responses": [
-                "“Code is like humor. When you have to explain it, it’s bad.” – Cory House",
-                "“Success is not final, failure is not fatal: It is the courage to continue that counts.” – Winston Churchill"
-              ]
-          },
-          {
-            "tag": "IS_department_info",
-            "patterns": [
-              "Tell me about the IS department",
-              "Information Systems department",
-              "Tell me about is department",
-
-
-              "Information Systems at AAU",
-              "What is the School of Information Systems?",
-              "Where is the IS department located?",
-              "Info about Information Systems program",
-              "IS program details",
-              "Contact IS department",
-              "What is taught in IS at AAU?",
-              "Overview of IS department",
-              "Information Systems Addis Ababa University"
-            ],
-            "responses": [
-              "👋 Hello! Welcome to the Addis Ababa University School of Information Systems! 😊\n\nThe School of Information Systems, part of the College of Natural Sciences, offers a vibrant 4-year Bachelor of Information Systems (BIS) program. We're located on the FBE Campus, offering a blend of technical and managerial skills training.\n\n📚 *Curriculum Highlights*: Our BIS program covers a wide range of topics, from programming (C++, Java, web development) and databases to system analysis, design, and cybersecurity. You can find detailed course info including credit hours in our course catalog (available on request).\n\n👨‍🏫 *Faculty*: We have a dedicated team of instructors. You can find their office locations, emails, and LinkedIn profiles in our Instructor Directory.\n\n🎉 *Events & Community*: We host regular events like hackathons, IS Day, workshops, game fests, and IS Talks—perfect for networking, learning, and fun!\n\n🏢 *Location & Contact*: The department office is on the 1st floor of the Eshetu Chole Building, FBE Campus. Phone: 011 122 9191.\n\nFeel free to ask anything else! 😊"
-            ]
-          },
-            {
-              "tag": "IS_Student",
-              "patterns": [
-                "Tell me about IS students",
-                "Who are the IS students?",
-                "What do you know about IS students?"
-                
-              ],
-              "responses": [
-                "The best people, the best doctors, the best sisters. Nobody is like them!"
-              ]
-            },
-            {
-              "tag": "IS_students",
-              "patterns": [
-                "Tell me about IS students",
-                "Who are the IS students?",
-                "Describe the Information Systems students",
-                "What are IS students like?",
-                "IS student life",
-                "IS students AAU",
-                "Information Systems students profile",
-                "How are the students in IS?",
-                "What do IS students do?",
-                "Do IS students code?"
-              ],
-              "responses": [
-                "Information Systems (IS) students at Addis Ababa University are known for their interdisciplinary skills, blending tech with business insight. 💡 Many are talented in coding, design, and data analysis, while also excelling in project management and communication. \n\nThey actively participate in community events like hackathons, workshops, IS Day, and IS Talks 🎉. They're also involved in clubs like GDSC AAU and contribute to real-world projects, startups, and competitions. \n\nIS students come from diverse backgrounds but share a common passion for solving problems using technology and information systems. They're creative, collaborative, and constantly pushing boundaries! 🚀"
-              ]
-            },                          
-          {
-              "tag": "Docye",
-              "patterns": [
-                "Docye",
-                "Tell me about Docye",
-                "Who is Docye?",
-                "What do you know about Docye?",
-                "Docye the IS student"
-               
-              ],
-              "responses": [
-                "The best person, the best Doctor, the best sister. Nobody is like her!"
-              ]
-            },  {
-              "tag": "IS_department_features",
-              "patterns": [
-                "What makes the IS department special?",
-                "Why is the Information Systems program unique?",
-                "Tell me the best features of the IS program",
-                "Why should I study IS at AAU?",
-                "IS vs CS at AAU",
-                "Special aspects of Information Systems department"
-              ],
-              "responses": [
-                "📍 The Information Systems (IS) program at Addis Ababa University stands out for its powerful integration of both technical and managerial skills. Unlike purely technical Computer Science programs, our BIS curriculum blends business principles, management theories, and socio-cultural insights with programming and IT infrastructure training. 🖥️📊 This holistic education prepares students to be system designers, analysts, project managers, and tech-savvy entrepreneurs ready for multidisciplinary careers."
-              ]
-            },
-            {
-              "tag": "IS_students_uniqueness",
-              "patterns": [
-                "What makes IS students unique?",
-                "Why are IS students at AAU special?",
-                "Describe the uniqueness of IS students",
-                "IS student skills",
-                "How do IS students stand out?"
-              ],
-              "responses": [
-                "💡 IS students at AAU are uniquely equipped with both technical and managerial expertise. Through programming, database systems, and networking courses, they gain strong technical foundations. But they also take classes in Entrepreneurship, Management, and Accounting, building essential business skills. \n\nTheir experiences go beyond the classroom with hands-on activities like hackathons, IS Talks, and collaborative projects. The focus on emerging technologies like AI and IoT, paired with ethics and societal relevance, makes them versatile innovators ready for the future."
-              ]
-            },
-            {
-              "tag": "IS_course_overview",
-              "patterns": [
-                "Can I get a summary of IS courses?",
-                "What are the IS courses like?",
-                "Tell me about the IS program structure",
-                "Give me a course overview for Information Systems",
-                "IS degree roadmap"
-              ],
-              "responses": [
-                "🗂️ The Bachelor of Information Systems (BIS) program at AAU is a comprehensive 4-year journey:\n\n📘 **1st Year:** Core courses like Communicative English, Programming in C++, Applied Math, and Emerging Technologies.\n\n📗 **2nd Year:** Students dive deeper into Management, Discrete Math, Accounting, Object-Oriented Programming, and Databases.\n\n📙 **3rd Year:** Includes Internet Programming, Research Methods, System Analysis & Design, and Networking.\n\n📕 **4th Year:** Advanced topics such as AI, HCI, Project Management, Data Science, Enterprise Systems, and inclusivity in tech.\n\n📌 For a full and official list, refer to the AAU IS course catalog!"
-              ]
-            },                          
-            {
-              "tag": "IS_Talks",
-              "patterns": [
-                "the best episode IS_talks",
-                "the episode with team roha",
-                "IS_talks show",
-                "What is IS_talks?",
-                "Tell me about IS_talks"
-              ],
-              "responses": [
-                "The IS_Talks is a student-led talk series from the School of Information Science at Addis Ababa University, highlighting innovative minds and their journeys. You can watch one of the best episodes featuring Team Roha here: https://www.youtube.com/watch?v=DedNu9pTV3E&t=3187s"
-              ]
-            },
-            {
-              "tag": "team_roha",
-              "patterns": [
-                "Team roha",  
-                "Team Roha",
-                "who are team roha?",
-                "Tell me about Team Roha",
-                "Team Roha members",
-                "Team Roha in the hackathon",
-                "IS hackathon team Roha"
-              ],
-              "responses": [
-                "Team Roha is made up of 4 Information Systems students — Berhanelidet Bekele, Edeal, Abel, and Shahon — and 1 Computer Science student, Nolawi Assefa. 🎉 Congratulations to Team Roha from Information Systems for securing 2nd place in the Google Developers Club AAU Hackathon! 🏆 Your hard work and dedication have truly paid off, and this achievement is just the beginning. We look forward to seeing even greater accomplishments from you in the future. Keep pushing the boundaries and continue working with the same passion and drive!"
-              ]
-            }
-,              
-      {
-          "tag": "joke",
-          "patterns": [
-              "Tell me a joke",
-              "\u12a0\u1295\u12f5 \u1240\u120d\u12f5 \u1295\u1308\u1228\u129d",
-              "Something funny"
-          ],
-          "responses": [
-              "\ud83d\ude02 Why did the programmer quit his job? Because he didn\u2019t get arrays!",
-              "\u1208\u121d\u1295 \u1352\u1232\u12cd \u1260\u130b\u1263 \u121d\u122d\u121d\u122d \u12a0\u12f0\u1228\u1308? \u12e8\u12a5\u122d\u1231 \u134a\u12cd\u1275\u122b \u1290\u1260\u122d!",
-              "Why don\u2019t programmers like nature? It has too many bugs.",
-              "Why was the computer cold? It left its Windows open!",
-              "Why do programmers prefer dark mode? Because light attracts bugs!",
-              "Why did the computer go to therapy? It had too many bytes of emotional baggage!"
-          ]
-      },
-      {
-          "tag": "fallback",
-          "patterns": [
-              "....",
-              "??",
-              "I don't know",
-              "Invalid query",
-              "What?"
-          ],
-          "responses": [
-              "Sorry, I didn\u2019t catch that. Could you rephrase it?",
-              "Hmm, that\u2019s not something I understand yet.",
-              "Please try asking about instructors, resources, or IS topics."
-          ]
-      },
-     
-      {
-          "tag": "name",
-          "patterns": [
-              "What is your name?",
-              "Who are you?",
-              "Tell me your name",
-              "Identify yourself"
-          ],
-          "responses": [
-              "I\u2019m TheISSeer \u2014 your department helper bot."
-          ]
-      },
-     
-      {
-          "tag": "bot_purpose",
-          "patterns": [
-              "What can you do?",
-              "What is your purpose?",
-              "How can you help me?",
-              "What are your capabilities?"
-          ],
-          "responses": [
-              "I provide information about the Information Science department, courses, and resources."
-          ]
-      },
-      {
-          "tag": "course_info",
-          "patterns": [
-              "What is the course about?",
-              "Tell me about this course",
-              "Course details",
-              "What do we learn in this course?"
-          ],
-          "responses": [
-              "This course covers various aspects of Information Science, including data management, systems design, and user experience."
-          ]
-      },
-      {
-          "tag": "instructor_info",
-          "patterns": [
-              "Who is the instructor?",
-              "Tell me about the instructor",
-              "Instructor details",
-              "Who teaches this course?"
-          ],
-          "responses": [
-              "The instructor for this course is Dr. Michael Melese, an expert in Information Science."
-          ]
-      },
-      {
-          "tag": "department_history",
-          "patterns": [
-              "What is the history of the department?",
-              "Tell me about the department's history",
-              "Department background",
-              "How did this department start?"
-          ],
-          "responses": [
-              "The Information Science department was established in 2000 to address the growing need for information professionals."
-          ]
-      },
-      {
-          "tag": "department_mission",
-          "patterns": [
-              "What is the mission of the department?",
-              "Department mission statement",
-              "What does the department aim to achieve?",
-              "Department goals"
-          ],
-          "responses": [
-              "The mission of the Information Science department is to educate and train professionals in the field of information management."
-          ]
-      },
-      {
-          "tag": "department_vision",
-          "patterns": [
-              "What is the vision of the department?",
-              "Department vision statement",
-              "What does the department aspire to be?",
-              "Department future goals"
-          ],
-          "responses": [
-              "The vision of the Information Science department is to be a leader in information education and research in Africa."
-          ]
-      },
-      {
-          "tag": "department_values",
-          "patterns": [
-              "What are the values of the department?",
-              "Department core values",
-              "What does the department believe in?",
-              "Department principles"
-          ],
-          "responses": [
-              "The Information Science department values integrity, innovation, collaboration, and excellence in education."
-          ]
-      },
-      {
-          "tag": "department_contact",
-          "patterns": [
-              "How can I contact the department?",
-              "Department contact information",
-              "Is there a phone number?",
-              "Can I email someone?"
-          ],
-          "responses": [
-              "You can reach us at: @TheISSeer or @Berhanbek:"
-          ]
-      },
-      {
-          "tag": "department_info",
-          "patterns": [
-              "Tell me about the department",
-              "What is the Information Science department?",
-              "Give me information about your department",
-              "What do you study in this department?"
-          ],
-          "responses": [
-              "The Information Science department focuses on data, systems, and technologies that connect people and knowledge."
-          ]
-      },
-      {
-          "tag": "department_faculty",
-          "patterns": [
-              "Who are the faculty members?",
-              "List of faculty",
-              "Faculty details",
-              "Who teaches in this department?"
-          ],
-          "responses": [
-              "Our faculty includes experienced professionals and researchers in Information Science."
-          ]
-      },
-      {
-          "tag": "department_programs",
-          "patterns": [
-              "What programs do you offer?",
-              "List of programs",
-              "Programs in Information Science",
-              "What degrees are available?"
-          ],
-          "responses": [
-              "We offer undergraduate and graduate programs in Information Science, including BSc and MSc degrees."
-          ]
-      },
-      {
-          "tag": "courses",
-          "patterns": [
-              "What courses do you offer?",
-              "List of courses in Information Science",
-              "What subjects are covered?",
-              "Which classes are part of this department?"
-          ],
-          "responses": [
-              "We offer courses like Data Science, Web Development, Databases, Human-Computer Interaction, and more."
-          ]
-      },
-      {
-          "tag": "joke",
-          "patterns": [
-              "Tell me a joke",
-              "Make me laugh",
-              "Do you know any jokes?",
-              "Say something funny"
-          ],
-          "responses": [
-              "Why don't scientists trust atoms? Because they make up everything!",
-              "Why did the student bring a ladder to school? Because they were going to high school!"
-          ]
-      },
-      {
-          "tag": "thanks",
-          "patterns": [
-              "Thanks",
-              "Thank you",
-              "Much appreciated",
-              "I appreciate it"
-          ],
-          "responses": [
-              "You're welcome!",
-              "Anytime!",
-              "Happy to help!"
-          ]
-      },
-      {
-          "tag": "goodbye",
-          "patterns": [
-              "Bye",
-              "Goodbye",
-              "See you later",
-              "Catch you later"
-          ],
-          "responses": [
-              "Goodbye! Have a great day!",
-              "See you around!",
-              "Bye! Come back soon."
-          ]
-      },
-      {
-          "tag": "office_location",
-          "patterns": [
-              "Where is the department office?",
-              "What is your location?",
-              "Where can I find the department?",
-              "Department building location?",
-              "How can I contact the department?",
-              "Is there a phone number?",
-              "Can I email someone?",
-              "Contact information?"
-          ],
-          "responses": [
-              "\ud83d\udccd Location: Eshetu Chole Building, FBE Campus \u2014 1st Floor\n \u260e\ufe0f Phone Number: 011 122 9191\n \ud83d\udce7 Email: information_sci_cns@aau.edu.et"
-          ]
-      },
-      {
-          "tag": "department_activities",
-          "patterns": [
-              "What events are happening?",
-              "Are there any workshops?",
-              "Do you have seminars?",
-              "What activities are planned?"
-          ],
-          "responses": [
-              "We host workshops, seminars, and guest lectures throughout the semester. Stay tuned!"
-          ]
-      },
-      {
-          "tag": "department_website",
-          "patterns": [
-              "What is the department website?",
-              "Where can I find more info online?",
-              "Is there a website for the department?",
-              "Department online resources?"
-          ],
-          "responses": [
-              "You can visit our official website at [www.aau.edu.et](http://www.aau.edu.et) for more information."
-          ]
-      },
-      {
-          "tag": "club_activities",
-          "patterns": [
-              "Are there student clubs?",
-              "What student activities are there?",
-              "Do you have extracurriculars?",
-              "Are there any events in the department?"
-          ],
-          "responses": [
-              "Yes! We have coding clubs, research groups, hackathons, and seminars every semester."
-          ]
-      },
-      {
-          "tag": "department_head",
-          "patterns": [
-              "Head",
-              "Department head",
-              "Leader",
-              "Department leader",
-              "Who is the head of the department?",
-              "Department head?",
-              "IS department head",
-              "Who leads the Information Science department?",
-              "\u122b\u1235 \u1218\u121d\u1205\u1229 \u121b\u1295 \u1290\u12cd?"
-          ],
-          "responses": [
-              "\ud83d\udc68\u200d\ud83c\udfeb Dr. Michael Melese Woldeyohannis is the current Department Head of the School of Information Science at Addis Ababa University.",
-              "The department is led by Dr. Michael Melese. Office: Eshetu Chole 621. Email: michael.melese@aau.edu.et"
-          ]
-      },
-      {
-          "tag": "coordinators",
-          "patterns": [
-              "Who are the coordinators in the department?",
-              "IS coordinators?",
-              "\u121b\u1295 \u1290\u12cd \u1270\u1240\u1293\u1243\u129d \u1260\u1218\u121d\u1205\u122b\u1295?",
-              "\u12ae\u122d\u12f5\u1294\u1270\u122e\u1279 \u121b\u1295 \u1293\u1278\u12cd?"
-          ],
-          "responses": [
-              "1\ufe0f\u20e3 Ato Betsegaw Dereje \u2013 Office: Eshetu Chole 423 \u2013 Email: betsegaw.dereje@aau.edu.et\n2\ufe0f\u20e3 Dr. Tibebe Beshah \u2013 Office: Eshetu Chole 422 \u2013 Email: tibebe.beshah@aau.edu.et\n3\ufe0f\u20e3 Dr. Abebaw Tadesse \u2013 Office: Eshetu Chole 421 \u2013 Email:"
-          ]
-      },
-      {
-          "tag": "academic_calendar",
-          "patterns": [
-              "What is the calander",
-              "Academic Calander",
-              "Calander Schedule",
-              "How is the semester arranged?",
-              "Academic calendar",
-              "\u12e8\u1230\u121c\u1235\u1270\u1229 \u1245\u12f0\u121d \u1270\u12a8\u1270\u120d",
-              "When do we start classes?",
-              "When is mid exam?",
-              "When is final exam?",
-              "\u12e8\u1218\u12ab\u12a8\u1208\u129b \u1348\u1270\u1293 \u130a\u12dc?",
-              "\u12ad\u134d\u120d \u1218\u1300\u1218\u122a\u12eb \u1218\u127c \u1290\u12cd?"
-          ],
-          "responses": [
-              "\ud83d\udcc6 **Academic Calendar Overview:**\n\ud83d\udfe2 *1st Semester (October \u2013 January)*\n- Classes begin early October\n- Mid Exams around mid-November\n- Final Exams late January\n\n\ud83d\udd35 *2nd Semester (February \u2013 June)*\n- Classes resume mid-February\n- Mid Exams usually in April\n- Final Exams early to mid-June\n\n\ud83d\udece\ufe0f *Note:* Dates may shift slightly each year. Always check official announcements or your class advisor!"
-          ]
-      },
-      {
-          "tag": "study_resources",
-          "patterns": [
-              "Where can I find study materials?",
-              "Are there online resources?",
-              "Where can I download notes?",
-              "Study guides available?"
-          ],
-          "responses": [
-              "You can find study materials on our Telegram channel @SISResourcesBot or through the department website."
-          ]
-      },
+  {
+    "tag": "course_info",
+    "patterns": [
+      "What is the course about?",
+      "Tell me about this course",
+      "Course details",
+      "What do we learn in this course?"
+    ],
+    "responses": [
+      "This course covers various aspects of Information Science, including data management, systems design, and user experience."
+    ]
+  },
+  {
+    "tag": "instructor_info",
+    "patterns": [
+      "Who is the instructor?",
+      "Tell me about the instructor",
+      "Instructor details",
+      "Who teaches this course?"
+    ],
+    "responses": [
+      "The instructor for this course is Dr. Michael Melese, an expert in Information Science."
+    ]
+  },
+  {
+    "tag": "department_info",
+    "patterns": [
+      "Tell me about the department",
+      "What is the Information Science department?",
+      "Give me information about your department",
+      "What do you study in this department?"
+    ],
+    "responses": [
+      "The Information Science department focuses on data, systems, and technologies that connect people and knowledge."
+    ]
+  },
+  {
+    "tag": "department_mission",
+    "patterns": [
+      "What is the mission of the department?",
+      "Department mission statement",
+      "What does the department aim to achieve?",
+      "Department goals"
+    ],
+    "responses": [
+      "The mission of the Information Science department is to educate and train professionals in the field of information management."
+    ]
+  },
+  {
+    "tag": "department_vision",
+    "patterns": [
+      "What is the vision of the department?",
+      "Department vision statement",
+      "What does the department aspire to be?",
+      "Department future goals"
+    ],
+    "responses": [
+      "The vision of the Information Science department is to be a leader in information education and research in Africa."
+    ]
+  },
+  {
+    "tag": "department_programs",
+    "patterns": [
+      "What programs do you offer?",
+      "List of programs",
+      "Programs in Information Science",
+      "What degrees are available?"
+    ],
+    "responses": [
+      "We offer undergraduate and graduate programs in Information Science, including BSc and MSc degrees."
+    ]
+  },
+  {
+    "tag": "courses",
+    "patterns": [
+      "What courses do you offer?",
+      "List of courses in Information Science",
+      "What subjects are covered?",
+      "Which classes are part of this department?"
+    ],
+    "responses": [
+      "We offer courses like Data Science, Web Development, Databases, Human-Computer Interaction, and more."
+    ]
+  },
+  {
+    "tag": "contact_info",
+    "patterns": [
+      "How can I contact the department?",
+      "Department contact information",
+      "Is there a phone number?",
+      "Can I email someone?"
+    ],
+    "responses": [
+      "You can reach us at: @TheISSeer or @Berhanbek on social media."
+    ]
+  },
+{
+  "tag": "Docye",
+  "patterns": [
+    "Docye",
+    "Tell me about Docye",
+    "Who is Docye?",
+    "What do you know about Docye?",
+    "Docye the IS student"
+   
+  ],
+  "responses": [
+    "The best person, the best Doctor, the best sister. Nobody is like her!"
+  ]},
+    {
+      "tag": "classroom_question",
+      "patterns": [
+        "What is recursion?", "Explain OOP", "Difference between list and tuple", "አይነተኛ ጥያቄ", "ትምህርት ጥያቄ"
+      ],
+      "responses": [
+        "🛰 This looks like a classroom question. Forwarding to Gemini AI for a deeper explanation...",
+        "Let me connect you with expert-level clarity. One moment...",
+        "Pulling up the concept for you — hang tight!"
+      ]
+    },
       {
           "tag": "default",
           "patterns": [],
@@ -903,5 +442,5 @@
               "I do not understand... Try asking something else about the department."
           ]
       }
-  ]
-}
+    ]
+  }
