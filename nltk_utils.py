@@ -1,16 +1,3 @@
-import nltk
-import os
-
-NLTK_DATA_PATH = "/opt/render/nltk_data"
-os.makedirs(NLTK_DATA_PATH, exist_ok=True)
-nltk.data.path.append(NLTK_DATA_PATH)
-
-# Download valid NLTK resources
-nltk.download("punkt", download_dir=NLTK_DATA_PATH)
-nltk.download("stopwords", download_dir=NLTK_DATA_PATH)
-nltk.download("wordnet", download_dir=NLTK_DATA_PATH)
-nltk.download("averaged_perceptron_tagger", download_dir=NLTK_DATA_PATH)
-nltk.download("omw-1.4", download_dir=NLTK_DATA_PATH)
 import numpy as np
 import nltk
 import string
