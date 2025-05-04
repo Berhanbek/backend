@@ -1,28 +1,17 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-import pymysql
-import torch
 import random
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
-from google.generativeai import types
-from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
-import speech_recognition as sr
-import whisper
-from trainvoice import get_response_from_ai, add_to_intents, save_intents_to_file
-import uuid
 
 # Define safe paths for files
 INTENTS_PATH = os.path.join(os.path.dirname(__file__), "intents.json")
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data.pth")
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for cross-origin requests
-model = whisper.load_model("tiny") 
-
 
 # Load environment variables
 load_dotenv()
@@ -34,8 +23,6 @@ if not GEMINI_API_KEY:
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Set up Gemini ISSEER model with system prompt and config
-import google.generativeai as genai
-
 gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b",
     system_instruction=(
@@ -170,7 +157,6 @@ gemini_model = genai.GenerativeModel(
     }
 )
 
-
 # Load intents
 try:
     with open(INTENTS_PATH, "r", encoding="utf-8") as f:
@@ -178,199 +164,55 @@ try:
 except Exception as e:
     raise Exception(f"Failed to load intents.json: {str(e)}")
 
-# Load custom model data
-try:
-    data = torch.load(DATA_PATH)
-    input_size = data["input_size"]
-    hidden_size = data["hidden_size"]
-    output_size = data["output_size"]
-    all_words = data["all_words"]
-    tags = data["tags"]
-    model_state = data["model_state"]
-
-    custom_model = NeuralNet(input_size, hidden_size, output_size)
-    custom_model.load_state_dict(model_state)
-    custom_model.eval()
-except Exception as e:
-    raise Exception(f"Model loading error: {str(e)}")
-
-def get_db_connection():
-    return pymysql.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME"),
-        cursorclass=pymysql.cursors.Cursor
-    )
-
 def reload_intents():
     global intents
     with open(INTENTS_PATH, "r", encoding="utf-8") as f:
         intents = json.load(f)
 
-conn = get_db_connection()
-# Ensure the database connection is established
-# Ensure tables exist
-def setup_database(conn):
-    with conn.cursor() as cursor:
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS chats (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS messages (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                chat_id INT NOT NULL,
-                sender VARCHAR(50) NOT NULL,
-                content TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE
-            )
-        """)
-        conn.commit()
-
-conn = get_db_connection()
-setup_database(conn)
-
-def voice_to_text(audio_file_path):
-    recognizer = sr.Recognizer()
-    try:
-        with sr.AudioFile(audio_file_path) as source:
-            recognizer.adjust_for_ambient_noise(source, duration=1)
-            audio = recognizer.record(source)
-            text = recognizer.recognize_google(audio)
-            return text
-    except sr.UnknownValueError:
-        return "Sorry, I could not understand the audio."
-    except sr.RequestError:
-        return "Speech Recognition service is unavailable."
-
-# Route message to custom model or Gemini
-def route_question(msg):
+# Simple rule-based intent matching
+def get_intent_response(msg):
     tokens = tokenize(msg)
-    X = bag_of_words(tokens, all_words)
-    X = torch.from_numpy(X).float().unsqueeze(0)
-
-    # Get prediction from custom model
-    output = custom_model(X)
-    _, predicted = torch.max(output, dim=1)
-    tag = tags[predicted.item()]
     reload_intents()
+    for intent in intents["intents"]:
+        for pattern in intent.get("patterns", []):
+            pattern_tokens = tokenize(pattern)
+            if any(token in tokens for token in pattern_tokens):
+                if intent.get("responses"):
+                    return random.choice(intent["responses"])
+    # Fallback to default intent if exists
+    for intent in intents["intents"]:
+        if intent.get("tag") == "default" and intent.get("responses"):
+            return random.choice(intent["responses"])
+    return None
 
-    # Calculate confidence
-    probs = torch.softmax(output, dim=1)
-    confidence = probs[0][predicted.item()]
-
-    print(f"Custom model predicted tag: {tag} | Confidence: {confidence.item()}")
-
-    # If custom model is confident enough, use its response
-    if confidence.item() >= 0.3:
-        for intent in intents["intents"]:
-            if tag == intent["tag"]:
-                return random.choice(intent["responses"])
-    else:
-        # Fallback to Gemini ISSEER
-        try:
-            response = gemini_model.generate_content([msg])
-            return response.text if hasattr(response, "text") else str(response)
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            print(f"Error in Gemini response: {str(e)}")
-            return "Sorry, I couldn't process your request."
-
+# Route message to intent or Gemini
+def route_question(msg):
+    response = get_intent_response(msg)
+    if response:
+        return response
+    # Fallback to Gemini ISSEER
+    try:
+        result = gemini_model.generate_content([msg])
+        return result.text if hasattr(result, "text") else str(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"Error in Gemini response: {str(e)}")
+        return "Sorry, I couldn't process your request."
 
 # ROUTES
-@app.route("/chat/new", methods=["POST"])
-def new_chat():
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("INSERT INTO chats (title) VALUES ('New Chat')")
-            conn.commit()
-            chat_id = cursor.lastrowid
-
-            cursor.execute("INSERT INTO messages (chat_id, sender, content) VALUES (%s, %s, %s)",
-                           (chat_id, "bot", "How can I help you?"))
-            conn.commit()
-
-        return jsonify({
-            "id": chat_id,
-            "title": "New Chat",
-            "messages": [{"sender": "bot", "content": "How can I help you?"}]
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/chats", methods=["GET"])
-def get_chats():
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT id, title, created_at FROM chats")
-            rows = cursor.fetchall()
-            chats = [
-                {
-                    "id": row[0],
-                    "title": row[1],
-                    "createdAt": row[2].strftime("%Y-%m-%d %H:%M:%S")
-                }
-                for row in rows
-            ]
-        return jsonify(chats)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 @app.route("/message", methods=["POST"])
 def send_message_to_bot():
     data = request.get_json()
     content = data.get("content")
-
     if not content:
         return jsonify({"error": "Message content is required"}), 400
-
     try:
         bot_reply = route_question(content)
-        return jsonify({"bot_reply": bot_reply})  # Ensure the response key matches the frontend expectation
+        return jsonify({"bot_reply": bot_reply})
     except Exception as e:
         print(f"Error in /message endpoint: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-@app.route("/chat/delete/<int:chat_id>", methods=["DELETE"])
-def delete_chat(chat_id):
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("DELETE FROM chats WHERE id = %s", (chat_id,))
-            conn.commit()
-        return jsonify({"success": True, "chat_id": chat_id})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route("/get-response", methods=["POST"])
-def get_response():
-    data = request.get_json()
-    text = data.get("text", "")
-
-    if not text.strip():
-        return jsonify({"error": "Input text is required"}), 400
-
-    result = get_response_from_ai(text)
-    return jsonify(result)
-@app.route("/messages/<int:chat_id>", methods=["GET"])
-def get_messages(chat_id):
-    conn = get_db_connection()
-    with conn:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT sender, content, created_at FROM messages WHERE chat_id = %s", (chat_id,))
-            rows = cursor.fetchall()
-            messages = [{
-                "sender": row[0],
-                "content": row[1],
-                "createdAt": row[2].strftime("%Y-%m-%d %H:%M:%S")
-            } for row in rows]
-    return jsonify(messages)
 
 @app.route("/add-intent", methods=["POST"])
 def add_intent():
@@ -378,54 +220,21 @@ def add_intent():
     tag = data.get("tag")
     patterns = data.get("patterns", [])
     responses = data.get("responses", [])
-
     if not tag or not patterns or not responses:
         return jsonify({"error": "Tag, patterns, and responses are required"}), 400
-
-    add_to_intents(tag, patterns, responses)
-    save_intents_to_file()
+    # Add new intent to intents.json
+    reload_intents()
+    intents["intents"].append({
+        "tag": tag,
+        "patterns": patterns,
+        "responses": responses
+    })
+    with open(INTENTS_PATH, "w", encoding="utf-8") as f:
+        json.dump(intents, f, ensure_ascii=False, indent=4)
     return jsonify({"success": True, "message": f"Intent '{tag}' added successfully."})
-@app.route("/voice", methods=["POST"])
-def handle_voice_message():
-    if 'audio' not in request.files:
-        return jsonify({"error": "No audio file provided"}), 400
-
-    audio_file = request.files['audio']
-    if audio_file.filename == "":
-        return jsonify({"error": "Empty audio file"}), 400
-
-    audio_path = f"temp_audio_{uuid.uuid4().hex}.webm"
-
-    try:
-        audio_file.save(audio_path)
-        print(f"Audio file saved at: {audio_path}")
-
-        result = model.transcribe(audio_path)
-        transcribed_text = result.get("text", "").strip()
-        print(f"Transcribed Text: {transcribed_text}")
-
-        if not transcribed_text:
-            return jsonify({"error": "Transcription failed"}), 400
-
-        bot_reply = route_question(transcribed_text)
-        print(f"Bot Reply: {bot_reply}")
-
-        return jsonify({
-            "transcribed_text": transcribed_text,
-            "bot_reply": bot_reply
-        })
-    except Exception as e:
-        print(f"Error in /voice endpoint: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        if os.path.exists(audio_path):
-            os.remove(audio_path)
 
 # Start server
 if __name__ == "__main__":
     print("Server running on http://0.0.0.0:8080")
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
-
-result = model.transcribe("path/to/sample_audio.webm")
-print("Transcribed Text:", result["text"])
