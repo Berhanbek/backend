@@ -68,6 +68,20 @@
       ]
     },
     {
+      "tag": "department_head",
+      "patterns": [
+       "Who is the department head?", "Head of IS department", "Department chair", "የአካዳሚ መሪ", "የክፍል መሪ",
+    "Who is the head of the department?", "የክፍል ዋነኛ ወይም ዋነኛ መሪ","Department Head", "የክፍል ዋነኛ ወይም ዋነኛ መሪ",
+        "የአካዳሚ መሪ", "የክፍል መሪ", "የአካዳሚ መሪ", "የክፍል መሪ", "የአካዳሚ መሪ", "የክፍል መሪ","Who is the head of the department?", "የክፍል ዋነኛ ወይም ዋነኛ መሪ","Department Head", "የክፍል ዋነኛ ወይም ዋነኛ መሪ","Who is is deparment head"],
+      "responses": [
+        "The head of the Information Systems department is Dr. Michael Melese.",
+        "Dr. Michael Melese is the Department Head — Office: Eshetu Chole 621",
+        "Dr. Michael Melese is the Department Head — Office: Eshetu Chole 621",
+        "Dr. Michael Melese is the Department Head — Office: Eshetu Chole 621",
+        "Search instructors by name or course via the bot navigator. 🧑‍🏫"
+      ]
+    },
+    {
       "tag": "project_guidelines",
       "patterns": [
         "How does the final project work?", "What are the project requirements?", 
