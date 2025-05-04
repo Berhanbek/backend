@@ -1,9 +1,8 @@
 import nltk
 import os
 
-NLTK_DATA_PATH = "/opt/render/nltk_data"
-os.makedirs(NLTK_DATA_PATH, exist_ok=True)
-nltk.data.path.append(NLTK_DATA_PATH)
+nltk.data.path.append("/opt/render/project/src/nltk_data")  # Example path
+nltk.download('punkt', download_dir="/opt/render/project/src/nltk_data")
 
 # Download valid NLTK resources
 nltk.download("punkt", download_dir=NLTK_DATA_PATH)
@@ -269,5 +268,4 @@ def health():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     print(f"Server running on http://0.0.0.0:{port}")
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=port)
+    # app.run(host="0.0.0.0", port=port)  # REMOVE or comment out this line
