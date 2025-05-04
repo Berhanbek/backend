@@ -151,11 +151,7 @@
       {
           "tag": "Sewasew",
           "patterns": [
-              "Sewasew",
-              "Tell me about Sewasew",
-              "Who is Sewasew?",
-              "Who is Sewasew ",
-              "Sewasew the IS students mom"]
+              "Sewasew"]
               ,
 
               "responses": [
@@ -338,20 +334,7 @@
                 "Need help with a course? Let me know which one — I’ll try to connect you with a tutor or resources."
               ]
             },
-            {
-              "tag": "announcement_request",
-              "patterns": [
-                "Latest department notice?",
-                "Any new announcements?",
-                "What’s the latest update?",
-                "Notices from SIS office?",
-                "AAU School of IS news?"
-              ],
-              "responses": [
-                "Most announcements are pinned on the SIS Telegram: @SISResourcesBot. Shall I check?",
-                "You can also find notices at the SIS front desk or near Lab 2."
-              ]
-            },
+
             {
               "tag": "student_portal",
               "patterns": [
@@ -440,6 +423,10 @@
             "tag": "IS_department_info",
             "patterns": [
               "Tell me about the IS department",
+              "Information Systems department",
+              "Tell me about is department",
+
+
               "Information Systems at AAU",
               "What is the School of Information Systems?",
               "Where is the IS department located?",
@@ -459,13 +446,8 @@
               "patterns": [
                 "Tell me about IS students",
                 "Who are the IS students?",
-                "What do you know about IS students?",
-                "IS students at AAU",
-                "Do you know any IS students?",
-                "IS students from Section 3",
-                "Talk about IS students",
-                "Describe IS students",
-                "Facts about IS students"
+                "What do you know about IS students?"
+                
               ],
               "responses": [
                 "The best people, the best doctors, the best sisters. Nobody is like them!"
@@ -496,13 +478,8 @@
                 "Tell me about Docye",
                 "Who is Docye?",
                 "What do you know about Docye?",
-                "Docye the IS student",
-                "Do you know Docye?",
-                "Docye from Section 3",
-                "Docye, who is she?",
-                "Talk about Docye",
-                "Describe Docye",
-                "Facts about Docye"
+                "Docye the IS student"
+               
               ],
               "responses": [
                 "The best person, the best Doctor, the best sister. Nobody is like her!"
@@ -607,23 +584,7 @@
               "Please try asking about instructors, resources, or IS topics."
           ]
       },
-      {
-          "tag": "greeting",
-          "patterns": [
-              "Hi",
-              "Hello",
-              "Hey",
-              "Selam",
-              "Howdy",
-              "Good day",
-              "What's up",
-              "Hey there",
-              "Hi there"
-          ],
-          "responses": [
-              "Hello \ud83d\udc4b I am TheISSeer \u2014 ask me anything about your department!"
-          ]
-      },
+     
       {
           "tag": "name",
           "patterns": [
@@ -636,18 +597,7 @@
               "I\u2019m TheISSeer \u2014 your department helper bot."
           ]
       },
-      {
-          "tag": "bot_creator",
-          "patterns": [
-              "Who made you?",
-              "Who created you?",
-              "Who built this bot?",
-              "Who is your developer?"
-          ],
-          "responses": [
-              "I was developed by the brilliant minds at the Information Science department!"
-          ]
-      },
+     
       {
           "tag": "bot_purpose",
           "patterns": [
