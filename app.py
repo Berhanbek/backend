@@ -610,6 +610,25 @@ def route_question(msg):
 
     # Log attempts
     print(f"[gemini] call attempts: {call_attempts}")
+    # If the call attempts didn't succeed, try to list available models from the SDK
+    # This helps diagnose model-name / API-version mismatches (e.g. NotFound for gemini-1.5-flash-8b)
+    try:
+        if hasattr(genai, "list_models"):
+            try:
+                available = genai.list_models()
+                print(f"[gemini] available models (list_models): {available}")
+            except Exception as e_list:
+                print(f"[gemini] genai.list_models() raised: {e_list}\n" + traceback.format_exc())
+        elif hasattr(genai, "get_models"):
+            try:
+                available = genai.get_models()
+                print(f"[gemini] available models (get_models): {available}")
+            except Exception as e_get:
+                print(f"[gemini] genai.get_models() raised: {e_get}\n" + traceback.format_exc())
+        else:
+            print("[gemini] SDK does not expose list_models/get_models — consider upgrading google-generativeai package to a newer version that supports listing models.")
+    except Exception:
+        print("[gemini] unexpected error while attempting to list models:\n" + traceback.format_exc())
     # Try to extract text from whatever we got
     try:
         text = extract_text_from_result(res)
