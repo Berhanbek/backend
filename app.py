@@ -616,13 +616,24 @@ def route_question(msg):
         if hasattr(genai, "list_models"):
             try:
                 available = genai.list_models()
-                print(f"[gemini] available models (list_models): {available}")
+                print("[gemini] Available model names:")
+                for m in available:
+                    # Try to print model id and description if present
+                    if hasattr(m, 'name'):
+                        print(f"  - {m.name}")
+                    else:
+                        print(f"  - {m}")
             except Exception as e_list:
                 print(f"[gemini] genai.list_models() raised: {e_list}\n" + traceback.format_exc())
         elif hasattr(genai, "get_models"):
             try:
                 available = genai.get_models()
-                print(f"[gemini] available models (get_models): {available}")
+                print("[gemini] Available model names:")
+                for m in available:
+                    if hasattr(m, 'name'):
+                        print(f"  - {m.name}")
+                    else:
+                        print(f"  - {m}")
             except Exception as e_get:
                 print(f"[gemini] genai.get_models() raised: {e_get}\n" + traceback.format_exc())
         else:
