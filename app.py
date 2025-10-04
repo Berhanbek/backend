@@ -13,6 +13,15 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from nltk_utils import tokenize
 import traceback
+# Try to import torch and local model utilities for a faster, offline fallback
+try:
+    import torch
+    from model import NeuralNet
+    from nltk_utils import bag_of_words
+    TORCH_AVAILABLE = True
+except Exception:
+    TORCH_AVAILABLE = False
+    print("[startup] PyTorch or model imports unavailable; model-based intent classifier disabled")
 
 
 # Define safe paths for files
@@ -413,6 +422,30 @@ else:
     except Exception:
         print("[startup] Loaded intents but failed to print tags")
 
+# Attempt to load a trained classifier saved as data.pth for local intent prediction
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "data.pth")
+model_data = None
+local_model = None
+model_all_words = None
+model_tags = None
+if TORCH_AVAILABLE and os.path.exists(MODEL_PATH):
+    try:
+        model_data = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+        input_size = model_data.get('input_size')
+        hidden_size = model_data.get('hidden_size')
+        output_size = model_data.get('output_size')
+        model_all_words = model_data.get('all_words')
+        model_tags = model_data.get('tags')
+        local_model = NeuralNet(input_size, hidden_size, output_size)
+        local_model.load_state_dict(model_data.get('model_state'))
+        local_model.eval()
+        print(f"[startup] Loaded local model from {MODEL_PATH} with {len(model_tags)} tags")
+    except Exception as e:
+        print(f"[startup] Failed to load local model: {e}\n" + traceback.format_exc())
+else:
+    if TORCH_AVAILABLE:
+        print(f"[startup] No local model file at {MODEL_PATH}; skipping model-based intent classifier")
+
 def reload_intents():
     global intents
     with open(INTENTS_PATH, "r", encoding="utf-8") as f:
@@ -452,6 +485,34 @@ def get_intent_response(msg, threshold=0.25):  # Lowered threshold so intents ca
         return best_response
     return None  # Fallback to Gemini if no intent is precise enough
 
+
+def predict_model_response(msg, threshold=0.6):
+    """Predict intent using the local PyTorch model if available.
+    Returns a response string when confident, otherwise None.
+    """
+    if not TORCH_AVAILABLE or local_model is None or not model_all_words or not model_tags:
+        return None
+    try:
+        toks = tokenize(msg)
+        X = bag_of_words(toks, model_all_words)
+        X_tensor = torch.from_numpy(X).unsqueeze(0)
+        with torch.no_grad():
+            outputs = local_model(X_tensor.float())
+            probs = torch.softmax(outputs, dim=1)
+            top_prob, top_index = torch.max(probs, dim=1)
+            prob = float(top_prob.item())
+            idx = int(top_index.item())
+            tag = model_tags[idx]
+            print(f"[model] predicted tag={tag} prob={prob}")
+            if prob >= threshold:
+                # find intent responses for this tag
+                for intent in intents.get('intents', []):
+                    if intent.get('tag') == tag and intent.get('responses'):
+                        return random.choice(intent['responses'])
+    except Exception as e:
+        print(f"[model] prediction error: {e}\n" + traceback.format_exc())
+    return None
+
 # ...rest of your code remains unchanged...
 def route_question(msg):
     response = get_intent_response(msg)
@@ -474,7 +535,12 @@ def route_question(msg):
                         return resp
     except Exception as e:
         print(f"[permissive-match] error: {e}\n" + traceback.format_exc())
-    # No intent matched with high precision, try Gemini
+    # No intent matched with high precision, try local model classifier first (if available)
+    model_resp = predict_model_response(msg)
+    if model_resp:
+        print(f"[route_question] responding with local model: {model_resp}")
+        return model_resp
+    # No confident local model response, try Gemini
     def extract_text_from_result(result):
         # Try a number of common response shapes from different client versions
         try:
