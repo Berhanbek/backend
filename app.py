@@ -518,20 +518,21 @@ def route_question(msg):
     response = get_intent_response(msg)
     if response:
         return response
-    # Permissive fallback: if any pattern in intents shares at least one token with the message,
-    # return that intent's response. This prevents falling back to the default when the
-    # Jaccard threshold is too strict or intents.json contains short/malformed patterns.
+    # Permissive fallback: only match if at least 2 tokens overlap (for English), or if overlap is not just on generic words
     try:
         tokens = tokenize(msg)
+        generic_words = {"system", "department", "info", "information", "about", "is", "at", "aau", "tell", "program", "course", "details", "overview"}
         for intent in intents.get("intents", []):
             if not intent or not intent.get("patterns"):
                 continue
             for pattern in intent.get("patterns", []):
                 p_tokens = tokenize(pattern)
-                if len(set(tokens) & set(p_tokens)) >= 1:
+                overlap = set(tokens) & set(p_tokens)
+                # Only match if at least 2 tokens overlap and not all are generic
+                if len(overlap) >= 2 and not all(tok in generic_words for tok in overlap):
                     if intent.get("responses"):
                         resp = random.choice(intent["responses"])
-                        print(f"[permissive-match] matched intent='{intent.get('tag')}' via tokens overlap")
+                        print(f"[permissive-match] matched intent='{intent.get('tag')}' via tokens overlap (tokens={overlap})")
                         return resp
     except Exception as e:
         print(f"[permissive-match] error: {e}\n" + traceback.format_exc())
