@@ -414,7 +414,7 @@ def reload_intents():
 # Simple rule-based intent matching
 # ...existing code...
 
-def get_intent_response(msg, threshold=0.85):  # Higher threshold for precision
+def get_intent_response(msg, threshold=0.25):  # Lowered threshold so intents can match more reliably
     tokens = tokenize(msg)
     reload_intents()
     best_score = 0
@@ -432,6 +432,8 @@ def get_intent_response(msg, threshold=0.85):  # Higher threshold for precision
                 best_score = score
                 if intent.get("responses"):
                     best_response = random.choice(intent["responses"])
+    # Debug/logging: show best score so it's easier to tune the threshold
+    print(f"[intent] msg='{msg}' tokens={tokens} best_score={best_score} threshold={threshold}")
     if best_score >= threshold:
         return best_response
     return None  # Fallback to Gemini if no intent is precise enough
@@ -443,7 +445,10 @@ def route_question(msg):
         return response
     # No intent matched with high precision, try Gemini
     try:
+        # call the Gemini model
+        print(f"[gemini] calling Gemini for message: {msg}")
         result = gemini_model.generate_content([msg])
+        print(f"[gemini] raw result: {result}")
         if hasattr(result, "text") and result.text:
             return result.text
         elif hasattr(result, "candidates") and result.candidates:
@@ -451,7 +456,8 @@ def route_question(msg):
         else:
             return str(result)
     except Exception as e:
-        # If Gemini fails, fallback to default intent
+        # If Gemini fails, log the exception and fallback to the default intent response
+        print(f"[gemini] exception calling Gemini: {e}")
         for intent in intents["intents"]:
             if intent.get("tag") == "default" and intent.get("responses"):
                 return random.choice(intent["responses"])
