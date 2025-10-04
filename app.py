@@ -444,6 +444,23 @@ def route_question(msg):
     response = get_intent_response(msg)
     if response:
         return response
+    # Permissive fallback: if any pattern in intents shares at least one token with the message,
+    # return that intent's response. This prevents falling back to the default when the
+    # Jaccard threshold is too strict or intents.json contains short/malformed patterns.
+    try:
+        tokens = tokenize(msg)
+        for intent in intents.get("intents", []):
+            if not intent or not intent.get("patterns"):
+                continue
+            for pattern in intent.get("patterns", []):
+                p_tokens = tokenize(pattern)
+                if len(set(tokens) & set(p_tokens)) >= 1:
+                    if intent.get("responses"):
+                        resp = random.choice(intent["responses"])
+                        print(f"[permissive-match] matched intent='{intent.get('tag')}' via tokens overlap")
+                        return resp
+    except Exception as e:
+        print(f"[permissive-match] error: {e}\n" + traceback.format_exc())
     # No intent matched with high precision, try Gemini
     def extract_text_from_result(result):
         # Try a number of common response shapes from different client versions
