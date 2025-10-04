@@ -12,6 +12,7 @@ import json
 from dotenv import load_dotenv
 import google.generativeai as genai
 from nltk_utils import tokenize
+import traceback
 
 
 # Define safe paths for files
@@ -444,24 +445,90 @@ def route_question(msg):
     if response:
         return response
     # No intent matched with high precision, try Gemini
-    try:
-        # call the Gemini model
-        print(f"[gemini] calling Gemini for message: {msg}")
-        result = gemini_model.generate_content([msg])
-        print(f"[gemini] raw result: {result}")
-        if hasattr(result, "text") and result.text:
-            return result.text
-        elif hasattr(result, "candidates") and result.candidates:
-            return result.candidates[0].text
-        else:
+    def extract_text_from_result(result):
+        # Try a number of common response shapes from different client versions
+        try:
+            if result is None:
+                return None
+            # Raw string
+            if isinstance(result, str):
+                return result
+            # Common attributes
+            if hasattr(result, "text") and result.text:
+                return result.text
+            if hasattr(result, "output"):
+                out = result.output
+                # output may be a list of dicts
+                if isinstance(out, list) and len(out) > 0:
+                    first = out[0]
+                    if isinstance(first, dict) and "content" in first:
+                        return first["content"]
+                    if hasattr(first, "content"):
+                        return first.content
+            if hasattr(result, "candidates") and result.candidates:
+                first = result.candidates[0]
+                if hasattr(first, "text") and first.text:
+                    return first.text
+                if hasattr(first, "content") and first.content:
+                    return first.content
+            # dictionary shaped responses
+            if isinstance(result, dict):
+                # look for common keys
+                for k in ("text", "output_text", "content"):
+                    if k in result and result[k]:
+                        return result[k]
+                if "candidates" in result and isinstance(result["candidates"], list) and result["candidates"]:
+                    c0 = result["candidates"][0]
+                    if isinstance(c0, dict) and "text" in c0:
+                        return c0["text"]
+            # as last resort, stringify
             return str(result)
-    except Exception as e:
-        # If Gemini fails, log the exception and fallback to the default intent response
-        print(f"[gemini] exception calling Gemini: {e}")
-        for intent in intents["intents"]:
-            if intent.get("tag") == "default" and intent.get("responses"):
-                return random.choice(intent["responses"])
-        return "Sorry, I couldn't process your request."
+        except Exception:
+            print("[gemini] error extracting text from result:\n" + traceback.format_exc())
+            return None
+
+    # Try several ways of calling the SDK; capture exceptions and continue trying alternatives so we can diagnose older/newer SDK shapes
+    call_attempts = []
+    try:
+        print(f"[gemini] calling gemini_model.generate_content for message: {msg}")
+        res = gemini_model.generate_content([msg])
+        call_attempts.append(("gemini_model.generate_content", None))
+    except Exception as e1:
+        print(f"[gemini] generate_content failed: {e1}\n" + traceback.format_exc())
+        res = None
+        # try alternative top-level helpers
+        try:
+            print(f"[gemini] trying genai.generate for message")
+            # many versions use genai.generate(model=..., input=...)
+            res = genai.generate(model="gemini-1.5-flash-8b", input=msg)
+            call_attempts.append(("genai.generate", None))
+        except Exception as e2:
+            print(f"[gemini] genai.generate failed: {e2}\n" + traceback.format_exc())
+            try:
+                print(f"[gemini] trying genai.generate_text for message")
+                # some older variants expose generate_text or generate_text_stream
+                res = genai.generate_text(model="gemini-1.5-flash-8b", prompt=msg)
+                call_attempts.append(("genai.generate_text", None))
+            except Exception as e3:
+                print(f"[gemini] genai.generate_text failed: {e3}\n" + traceback.format_exc())
+
+    # Log attempts
+    print(f"[gemini] call attempts: {call_attempts}")
+    # Try to extract text from whatever we got
+    try:
+        text = extract_text_from_result(res)
+        print(f"[gemini] extracted text: {text}")
+        if text:
+            return text
+    except Exception:
+        print("[gemini] extraction exception:\n" + traceback.format_exc())
+
+    # If we reached here, all Gemini attempts failed; log and fallback to default intent
+    print("[gemini] all call attempts failed or returned empty result; falling back to default intent")
+    for intent in intents["intents"]:
+        if intent.get("tag") == "default" and intent.get("responses"):
+            return random.choice(intent["responses"])
+    return "Sorry, I couldn't process your request."
 
 @app.route("/message", methods=["POST"])
 def message():
