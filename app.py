@@ -406,6 +406,12 @@ try:
         intents = json.load(f)
 except Exception as e:
     raise Exception(f"Failed to load intents.json: {str(e)}")
+else:
+    try:
+        tags = [i.get("tag") for i in intents.get("intents", [])]
+        print(f"[startup] Loaded {len(tags)} intents. Sample tags: {tags[:10]}")
+    except Exception:
+        print("[startup] Loaded intents but failed to print tags")
 
 def reload_intents():
     global intents
@@ -425,10 +431,17 @@ def get_intent_response(msg, threshold=0.25):  # Lowered threshold so intents ca
             continue
         for pattern in intent.get("patterns", []):
             pattern_tokens = tokenize(pattern)
+            # Debug each pattern tokenization and any non-zero score
+            if not pattern_tokens:
+                print(f"[intent-debug] intent='{intent.get('tag')}' pattern='{pattern}' -> pattern_tokens is empty")
+            else:
+                print(f"[intent-debug] intent='{intent.get('tag')}' pattern='{pattern}' -> pattern_tokens={pattern_tokens}")
             # Calculate Jaccard similarity for better matching
             intersection = set(tokens) & set(pattern_tokens)
             union = set(tokens) | set(pattern_tokens)
             score = len(intersection) / max(len(union), 1)
+            if score > 0:
+                print(f"[intent-score] intent='{intent.get('tag')}' pattern='{pattern}' score={score} intersection={intersection} union={union}")
             if score > best_score:
                 best_score = score
                 if intent.get("responses"):
