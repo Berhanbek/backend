@@ -415,12 +415,17 @@ try:
         generation_config={
             "temperature": 0.95,
             "top_p": 0.85,
-            "max_output_tokens": 1200,
+            "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "2048")),
         }
     )
+
 except Exception as e:
     print(f"[startup] Could not instantiate genai.GenerativeModel: {e}\n" + traceback.format_exc())
     gemini_model = None
+
+# --- Conversation context support ---
+CONVERSATIONS = {}
+MAX_CONTEXT_MESSAGES = int(os.getenv("MAX_CONTEXT_MESSAGES", "6"))
 
 # Check availability of the requested model at startup and cache available models
 available_model_ids = []
@@ -552,11 +557,11 @@ def predict_model_response(msg, threshold=0.6):
     return None
 
 # ...rest of your code remains unchanged...
-def route_question(msg):
+
+def route_question(msg, session_id=None):
     response = get_intent_response(msg)
     if response:
         return response
-    # Permissive fallback: only match if at least 2 tokens overlap (for English), or if overlap is not just on generic words
     try:
         tokens = tokenize(msg)
         generic_words = {"system", "department", "info", "information", "about", "is", "at", "aau", "tell", "program", "course", "details", "overview"}
@@ -566,7 +571,6 @@ def route_question(msg):
             for pattern in intent.get("patterns", []):
                 p_tokens = tokenize(pattern)
                 overlap = set(tokens) & set(p_tokens)
-                # Only match if at least 2 tokens overlap and not all are generic
                 if len(overlap) >= 2 and not all(tok in generic_words for tok in overlap):
                     if intent.get("responses"):
                         resp = random.choice(intent["responses"])
@@ -574,26 +578,29 @@ def route_question(msg):
                         return resp
     except Exception as e:
         print(f"[permissive-match] error: {e}\n" + traceback.format_exc())
-    # No intent matched with high precision, try local model classifier first (if available)
     model_resp = predict_model_response(msg)
     if model_resp:
         print(f"[route_question] responding with local model: {model_resp}")
         return model_resp
-    # No confident local model response, try Gemini
+
+    # --- Gemini with context ---
+    ctx_msgs = []
+    if session_id:
+        history = CONVERSATIONS.get(session_id, [])[-MAX_CONTEXT_MESSAGES:]
+        for role, text in history:
+            ctx_msgs.append({"role": role, "content": text})
+    ctx_msgs.append({"role": "user", "content": msg})
+
     def extract_text_from_result(result):
-        # Try a number of common response shapes from different client versions
         try:
             if result is None:
                 return None
-            # Raw string
             if isinstance(result, str):
                 return result
-            # Common attributes
             if hasattr(result, "text") and result.text:
                 return result.text
             if hasattr(result, "output"):
                 out = result.output
-                # output may be a list of dicts
                 if isinstance(out, list) and len(out) > 0:
                     first = out[0]
                     if isinstance(first, dict) and "content" in first:
@@ -606,9 +613,7 @@ def route_question(msg):
                     return first.text
                 if hasattr(first, "content") and first.content:
                     return first.content
-            # dictionary shaped responses
             if isinstance(result, dict):
-                # look for common keys
                 for k in ("text", "output_text", "content"):
                     if k in result and result[k]:
                         return result[k]
@@ -616,105 +621,68 @@ def route_question(msg):
                     c0 = result["candidates"][0]
                     if isinstance(c0, dict) and "text" in c0:
                         return c0["text"]
-            # as last resort, stringify
             return str(result)
         except Exception:
             print("[gemini] error extracting text from result:\n" + traceback.format_exc())
             return None
 
-    # Try several ways of calling the SDK; capture exceptions and continue trying alternatives so we can diagnose older/newer SDK shapes
     call_attempts = []
+    res = None
     try:
-        print(f"[gemini] calling gemini_model.generate_content for message: {msg}")
-        res = gemini_model.generate_content([msg])
-        call_attempts.append(("gemini_model.generate_content", None))
-    except Exception as e1:
-        print(f"[gemini] generate_content failed: {e1}\n" + traceback.format_exc())
-        res = None
-        # try alternative top-level helpers
-        try:
-            print(f"[gemini] trying genai.generate for message")
-            # many versions use genai.generate(model=..., input=...)
-            res = genai.generate(model="gemini-1.5-flash-8b", input=msg)
-            call_attempts.append(("genai.generate", None))
-        except Exception as e2:
-            print(f"[gemini] genai.generate failed: {e2}\n" + traceback.format_exc())
-            try:
-                print(f"[gemini] trying genai.generate_text for message")
-                # some older variants expose generate_text or generate_text_stream
-                res = genai.generate_text(model="gemini-1.5-flash-8b", prompt=msg)
-                call_attempts.append(("genai.generate_text", None))
-            except Exception as e3:
-                print(f"[gemini] genai.generate_text failed: {e3}\n" + traceback.format_exc())
-
-    # Log attempts
-    print(f"[gemini] call attempts: {call_attempts}")
-    # If the call attempts didn't succeed, try to list available models from the SDK
-    # This helps diagnose model-name / API-version mismatches (e.g. NotFound for gemini-1.5-flash-8b)
-    try:
-        if hasattr(genai, "list_models"):
-            try:
-                available = genai.list_models()
-                print("[gemini] Available models (detailed):")
-                for m in available:
-                    try:
-                        # Common fields across SDKs/versions
-                        m_name = getattr(m, 'name', None) or getattr(m, 'model', None) or str(m)
-                        m_display = getattr(m, 'display_name', None) or getattr(m, 'title', None)
-                        m_desc = getattr(m, 'description', None)
-                        m_methods = getattr(m, 'supported_generation_methods', None) or getattr(m, 'supported_methods', None)
-                        print(f"  - id: {m_name}")
-                        if m_display:
-                            print(f"      display_name: {m_display}")
-                        if m_desc:
-                            print(f"      description: {m_desc}")
-                        if m_methods:
-                            print(f"      supported_methods: {m_methods}")
-                        # fallback: print full repr for debugging
-                        print(f"      repr: {repr(m)}")
-                    except Exception:
-                        print("  - <model> (failed to inspect) -> ", repr(m))
-            except Exception as e_list:
-                print(f"[gemini] genai.list_models() raised: {e_list}\n" + traceback.format_exc())
-        elif hasattr(genai, "get_models"):
-            try:
-                available = genai.get_models()
-                print("[gemini] Available model names:")
-                for m in available:
-                    if hasattr(m, 'name'):
-                        print(f"  - {m.name}")
-                    else:
-                        print(f"  - {m}")
-            except Exception as e_get:
-                print(f"[gemini] genai.get_models() raised: {e_get}\n" + traceback.format_exc())
+        if gemini_model is not None:
+            res = gemini_model.generate_content(ctx_msgs)
+            call_attempts.append("gemini_model.generate_content")
         else:
-            print("[gemini] SDK does not expose list_models/get_models — consider upgrading google-generativeai package to a newer version that supports listing models.")
+            res = genai.generate(model=MODEL_ID, input=ctx_msgs, generation_config={
+                "temperature": 0.95,
+                "top_p": 0.85,
+                "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "2048")),
+            })
+            call_attempts.append("genai.generate")
     except Exception:
-        print("[gemini] unexpected error while attempting to list models:\n" + traceback.format_exc())
-    # Try to extract text from whatever we got
-    try:
-        text = extract_text_from_result(res)
-        print(f"[gemini] extracted text: {text}")
-        if text:
-            return text
-    except Exception:
-        print("[gemini] extraction exception:\n" + traceback.format_exc())
+        print('[gemini] primary generate failed:\n' + traceback.format_exc())
+        try:
+            res = genai.generate(model=MODEL_ID, input=ctx_msgs)
+            call_attempts.append('genai.generate(no_config)')
+        except Exception:
+            try:
+                res = genai.generate_text(model=MODEL_ID, prompt=msg, generation_config={
+                    "temperature": 0.95,
+                    "top_p": 0.85,
+                    "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "2048")),
+                })
+                call_attempts.append('genai.generate_text')
+            except Exception:
+                print('[gemini] all generate fallbacks failed:\n' + traceback.format_exc())
 
-    # If we reached here, all Gemini attempts failed; log and fallback to default intent
-    print("[gemini] all call attempts failed or returned empty result; falling back to default intent")
+    print('[gemini] call attempts:', call_attempts)
+    text = extract_text_from_result(res)
+    if text:
+        if session_id:
+            CONVERSATIONS.setdefault(session_id, []).append(("user", msg))
+            CONVERSATIONS.setdefault(session_id, []).append(("assistant", text))
+            if len(CONVERSATIONS[session_id]) > MAX_CONTEXT_MESSAGES * 2:
+                CONVERSATIONS[session_id] = CONVERSATIONS[session_id][-MAX_CONTEXT_MESSAGES * 2:]
+        return text
+
     for intent in intents["intents"]:
         if intent.get("tag") == "default" and intent.get("responses"):
             return random.choice(intent["responses"])
     return "Sorry, I couldn't process your request."
 
 @app.route("/message", methods=["POST"])
+
 def message():
     data = request.get_json()
     content = data.get("content")
+    session_id = data.get("session_id")
+    clear_history = data.get("clear_history", False)
     if not content:
         return jsonify({"error": "Message content is required"}), 400
+    if session_id and clear_history:
+        CONVERSATIONS.pop(session_id, None)
     try:
-        bot_reply = route_question(content)
+        bot_reply = route_question(content, session_id=session_id)
         return jsonify({"bot_reply": bot_reply})
     except Exception as e:
         print(f"Error in /message endpoint: {str(e)}")
