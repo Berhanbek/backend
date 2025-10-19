@@ -593,12 +593,19 @@ def route_question(msg, session_id=None):
         return model_resp
 
     # 3. Fallback to Gemini for all other questions
+    # Build context for Gemini: if no session context, use plain string for max compatibility
     ctx_msgs = []
+    use_context = False
     if session_id:
         history = CONVERSATIONS.get(session_id, [])[-MAX_CONTEXT_MESSAGES:]
-        for role, text in history:
-            ctx_msgs.append({"role": role, "content": text})
-    ctx_msgs.append({"role": "user", "content": msg})
+        if history:
+            for role, text in history:
+                ctx_msgs.append({"role": role, "content": text})
+            use_context = True
+    if use_context:
+        ctx_msgs.append({"role": "user", "content": msg})
+    else:
+        ctx_msgs = msg  # plain string for Gemini if no context
 
     def extract_text_from_result(result):
         try:
@@ -637,6 +644,7 @@ def route_question(msg, session_id=None):
 
     call_attempts = []
     res = None
+    # Try context-aware call first, then fallback to plain string if needed
     try:
         if gemini_model is not None:
             res = gemini_model.generate_content(ctx_msgs)
@@ -648,22 +656,21 @@ def route_question(msg, session_id=None):
                 "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "2048")),
             })
             call_attempts.append("genai.generate")
-    except Exception:
-        print('[gemini] primary generate failed:\n' + traceback.format_exc())
+    except Exception as e1:
+        print('[gemini] context call failed, trying plain string fallback:\n' + traceback.format_exc())
         try:
-            res = genai.generate(model=MODEL_ID, input=ctx_msgs)
-            call_attempts.append('genai.generate(no_config)')
-        except Exception:
-            try:
-                res = genai.generate_text(model=MODEL_ID, prompt=msg, generation_config={
+            if gemini_model is not None:
+                res = gemini_model.generate_content(msg)
+                call_attempts.append("gemini_model.generate_content (plain string)")
+            else:
+                res = genai.generate(model=MODEL_ID, input=msg, generation_config={
                     "temperature": 0.95,
                     "top_p": 0.85,
                     "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "2048")),
                 })
-                call_attempts.append('genai.generate_text')
-            except Exception:
-                print('[gemini] all generate fallbacks failed:\n' + traceback.format_exc())
-
+                call_attempts.append("genai.generate (plain string)")
+        except Exception as e2:
+            print('[gemini] all generate fallbacks failed:\n' + traceback.format_exc())
     print('[gemini] call attempts:', call_attempts)
     text = extract_text_from_result(res)
     # Always return Gemini's output, even if it's empty or short
