@@ -666,16 +666,16 @@ def route_question(msg, session_id=None):
 
     print('[gemini] call attempts:', call_attempts)
     text = extract_text_from_result(res)
-    if text:
-        if session_id:
-            CONVERSATIONS.setdefault(session_id, []).append(("user", msg))
-            CONVERSATIONS.setdefault(session_id, []).append(("assistant", text))
-            if len(CONVERSATIONS[session_id]) > MAX_CONTEXT_MESSAGES * 2:
-                CONVERSATIONS[session_id] = CONVERSATIONS[session_id][-MAX_CONTEXT_MESSAGES * 2:]
+    # Always return Gemini's output, even if it's empty or short
+    if session_id:
+        CONVERSATIONS.setdefault(session_id, []).append(("user", msg))
+        CONVERSATIONS.setdefault(session_id, []).append(("assistant", text if text is not None else ""))
+        if len(CONVERSATIONS[session_id]) > MAX_CONTEXT_MESSAGES * 2:
+            CONVERSATIONS[session_id] = CONVERSATIONS[session_id][-MAX_CONTEXT_MESSAGES * 2:]
+    if text is not None:
         return text
-
-    # If Gemini fails, fallback to a generic error message
-    return "Sorry, I couldn't process your request."
+    # Only show error if Gemini API fails completely
+    return "Sorry, there was a problem with the Gemini API. Please try again later."
 
 @app.route("/message", methods=["POST"])
 
