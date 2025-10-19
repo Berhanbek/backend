@@ -526,7 +526,8 @@ def get_intent_response(msg, threshold=0.25):  # Lowered threshold so intents ca
     print(f"[intent] msg='{msg}' tokens={tokens} best_score={best_score} threshold={threshold}")
     if best_score >= threshold:
         return best_response
-    return None  # Fallback to Gemini if no intent is precise enough
+    # If no intent matches, always fallback to Gemini (never return None)
+    return None
 
 
 def predict_model_response(msg, threshold=0.6):
@@ -559,31 +560,39 @@ def predict_model_response(msg, threshold=0.6):
 # ...rest of your code remains unchanged...
 
 def route_question(msg, session_id=None):
+
+    # 1. Try rule-based intent matching
     response = get_intent_response(msg)
     if response:
         return response
-    try:
-        tokens = tokenize(msg)
-        generic_words = {"system", "department", "info", "information", "about", "is", "at", "aau", "tell", "program", "course", "details", "overview"}
-        for intent in intents.get("intents", []):
-            if not intent or not intent.get("patterns"):
-                continue
-            for pattern in intent.get("patterns", []):
-                p_tokens = tokenize(pattern)
-                overlap = set(tokens) & set(p_tokens)
-                if len(overlap) >= 2 and not all(tok in generic_words for tok in overlap):
-                    if intent.get("responses"):
-                        resp = random.choice(intent["responses"])
-                        print(f"[permissive-match] matched intent='{intent.get('tag')}' via tokens overlap (tokens={overlap})")
-                        return resp
-    except Exception as e:
-        print(f"[permissive-match] error: {e}\n" + traceback.format_exc())
-    model_resp = predict_model_response(msg)
+
+    # 2. Try local model classifier (department knowledge)
+    model_resp = None
+    model_confidence = 0.0
+    if TORCH_AVAILABLE and local_model is not None and model_all_words and model_tags:
+        try:
+            toks = tokenize(msg)
+            X = bag_of_words(toks, model_all_words)
+            X_tensor = torch.from_numpy(X).unsqueeze(0)
+            with torch.no_grad():
+                outputs = local_model(X_tensor.float())
+                probs = torch.softmax(outputs, dim=1)
+                top_prob, top_index = torch.max(probs, dim=1)
+                model_confidence = float(top_prob.item())
+                idx = int(top_index.item())
+                tag = model_tags[idx]
+                print(f"[model] predicted tag={tag} prob={model_confidence}")
+                if model_confidence >= 0.65:  # Only answer if confidence is high
+                    for intent in intents.get('intents', []):
+                        if intent.get('tag') == tag and intent.get('responses'):
+                            model_resp = random.choice(intent['responses'])
+        except Exception as e:
+            print(f"[model] prediction error: {e}\n" + traceback.format_exc())
+
     if model_resp:
-        print(f"[route_question] responding with local model: {model_resp}")
         return model_resp
 
-    # --- Gemini with context ---
+    # 3. Fallback to Gemini for all other questions
     ctx_msgs = []
     if session_id:
         history = CONVERSATIONS.get(session_id, [])[-MAX_CONTEXT_MESSAGES:]
@@ -665,9 +674,7 @@ def route_question(msg, session_id=None):
                 CONVERSATIONS[session_id] = CONVERSATIONS[session_id][-MAX_CONTEXT_MESSAGES * 2:]
         return text
 
-    for intent in intents["intents"]:
-        if intent.get("tag") == "default" and intent.get("responses"):
-            return random.choice(intent["responses"])
+    # If Gemini fails, fallback to a generic error message
     return "Sorry, I couldn't process your request."
 
 @app.route("/message", methods=["POST"])
